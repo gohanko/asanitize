@@ -8,6 +8,15 @@ class DiscordAPI(object):
     def build_url(self, *paths):
         return self.api_endpoint.join('/', paths)
 
+    def list_guilds(self):
+        pass
+
+    def list_dms(self):
+        pass
+    
+    def list_friends(self):
+        pass
+
     def search_guild(self, channel_id, author_id, offset=25):
         search_url = self.build_url('guilds', channel_id, 'messages', 'search?author={}&offset={}'.format(author_id, offset))
         return requests.get(search_url, self.headers)
@@ -15,6 +24,9 @@ class DiscordAPI(object):
     def search_dm(self, channel_id, author_id, offset=25):
         search_url = self.build_url('channels', channel_id, 'messages', 'search?author={}&offset={}'.format(author_id, offset))
         return requests.get(search_url, self.headers)
+    
+    def edit_message(self):
+        pass
 
     def delete_message(self, channel_id, message_id):
         message_url = self.build_url('channels', channel_id, 'messages', message_id)
