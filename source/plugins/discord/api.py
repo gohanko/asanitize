@@ -28,6 +28,10 @@ class DiscordAPI(object):
         search_url = self.build_url('channels', channel_id, 'messages', 'search?author={}&offset={}'.format(author_id, offset))
         return requests.get(search_url, headers=self.headers)
 
+    def edit_message(self, channel_id, message_id, content):
+        edit_url = self.build_url('channels', channel_id, 'messages', message_id)
+        return requests.patch(edit_url, headers=self.headers, data={ 'content': content })
+
     def delete_message(self, channel_id, message_id):
         message_url = self.build_url('channels', channel_id, 'messages', message_id)
         return requests.delete(message_url, headers=self.headers)
