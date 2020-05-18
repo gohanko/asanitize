@@ -19,7 +19,11 @@ class DiscordAPI(object):
     def get_user_dms(self, author_id):
         user_dms_url = self.build_url('users', '@me', 'channels')
         return requests.get(user_dms_url, headers=self.headers).json()
-  
+    
+    def get_user_dm_messages(self, channel_id):
+        user_dm_messages = self.build_url('channels', channel_id, 'messages')
+        return requests.get(user_dm_messages, headers=self.headers).json()
+
     def search_guild(self, channel_id, author_id, offset=25):
         search_url = self.build_url('guilds', channel_id, 'messages', 'search?author={}&offset={}'.format(author_id, offset))
         return requests.get(search_url, headers=self.headers)
@@ -27,10 +31,6 @@ class DiscordAPI(object):
     def search_dm(self, channel_id, author_id, offset=25):
         search_url = self.build_url('channels', channel_id, 'messages', 'search?author={}&offset={}'.format(author_id, offset))
         return requests.get(search_url, headers=self.headers)
-
-    def edit_message(self, channel_id, message_id, content):
-        edit_url = self.build_url('channels', channel_id, 'messages', message_id)
-        return requests.patch(edit_url, headers=self.headers, data={ 'content': content })
 
     def delete_message(self, channel_id, message_id):
         message_url = self.build_url('channels', channel_id, 'messages', message_id)
