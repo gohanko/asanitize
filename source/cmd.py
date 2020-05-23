@@ -1,7 +1,16 @@
+"""
+    cmd.py - Commandline Parser
+
+    This module handles the cli part of the application.
+
+    See COMMANDS for available commands and see ROUTINES
+    for the routines associated with the command.
+"""
+
 import argparse
 from .plugins.discord.routines import DiscordRoutines
 
-commands = [
+COMMANDS = [
     {
         'short_arg': '-t',
         'long_arg': '--token',
@@ -22,7 +31,7 @@ commands = [
     }
 ]
 
-routines = [
+ROUTINES = [
     {
         'service': 'discord',
         'routine': DiscordRoutines
@@ -30,12 +39,17 @@ routines = [
 ]
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    PARSER = argparse.ArgumentParser()
 
-    for command in commands:
-        parser.add_argument(command['short_arg'], command['long_arg'], **command['named_parameters'])
+    for COMMAND in COMMANDS:
+        PARSER.add_argument(
+            COMMAND['short_arg'],
+            COMMAND['long_arg'],
+            **COMMAND['named_parameters']
+        )
 
-    args = parser.parse_args()
-    for routine in routines:
-        if args.service == routine['service']:
-            routine['routine'](args.token)
+
+    ARGS = PARSER.parse_args()
+    for ROUTINE in ROUTINES:
+        if ARGS.service == ROUTINE['service']:
+            ROUTINE['routine'](ARGS.token)
