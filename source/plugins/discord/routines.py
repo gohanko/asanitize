@@ -21,12 +21,12 @@ class DiscordRoutines:
 
         messages = list(chain.from_iterable(message_groups))
 
-        message_seen = []
+        messages_seen = []
         author_messages = []
         for message in messages:
-            if message['author']['id'] == author_id and message['id'] not in message_seen:
+            if message['author']['id'] == author_id and message['id'] not in messages_seen:
                 author_messages.append(message)
-                message_seen.append(message['id'])
+                messages_seen.append(message['id'])
 
         return author_messages
 
