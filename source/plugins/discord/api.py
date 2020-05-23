@@ -12,24 +12,14 @@ class DiscordAPI(object):
         current_user_url = self.build_url('users', '@me')
         return requests.get(current_user_url, headers=self.headers).json()['id']
 
-    def get_user_guilds(self, author_id):
-        user_guilds_url = self.build_url('users', '@me', 'guilds')
-        return requests.get(user_guilds_url, headers=self.headers).json()
-
-    def get_user_dms(self, author_id):
-        user_dms_url = self.build_url('users', '@me', 'channels')
+    def get_user_channels(self, author_id, is_guild):
+        user_dms_url = self.build_url('users', '@me', 'guilds' if is_guild else 'channels')
         return requests.get(user_dms_url, headers=self.headers).json()
-    
-    def get_user_dm_messages(self, channel_id):
-        user_dm_messages = self.build_url('channels', channel_id, 'messages')
-        return requests.get(user_dm_messages, headers=self.headers).json()
 
-    def search_guild(self, channel_id, author_id, offset=25):
-        search_url = self.build_url('guilds', channel_id, 'messages', 'search?author={}&offset={}'.format(author_id, offset))
-        return requests.get(search_url, headers=self.headers)
-
-    def search_dm(self, channel_id, author_id, offset=25):
-        search_url = self.build_url('channels', channel_id, 'messages', 'search?author={}&offset={}'.format(author_id, offset))
+    def search(self, channel_id, author_id, offset, is_guild):
+        search_url = self.build_url('guilds' if is_guild else 'channels', channel_id, 'messages', 'search?author_id={}'.format(author_id))
+        if offset:
+            search_url = '{}&offset={}'.format(search_url, offset)
         return requests.get(search_url, headers=self.headers)
 
     def delete_message(self, channel_id, message_id):
