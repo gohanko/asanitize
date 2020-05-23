@@ -1,10 +1,9 @@
 """
     discord/api.py - Handles connections to Discord.
 
-    This module handles connections to discord. It
-    written because existing library more suitable
-    for bots (some calls aren't implemented) and
-    we only need a small subset of calls.
+    This module handles connections to discord. It's
+    written because existing library are more suitable
+    for bots and we only need a small subset of calls.
 """
 
 import requests
