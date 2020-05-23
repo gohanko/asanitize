@@ -1,7 +1,7 @@
 """
     common.py - Common functions
 
-    Contains common functions shared
+    Contains common functions shared 
     between our plugins.
 """
 
