@@ -24,7 +24,7 @@ class DiscordRoutines(object):
 
         return author_messages
 
-    def get_message_by_search_result(self, channel_id, author_id, is_guild):
+    def get_author_messages_by_search_result(self, channel_id, author_id, is_guild):
         search_page = 0
         author_messages = []
 
@@ -46,7 +46,7 @@ class DiscordRoutines(object):
     def sanitize_account(self):
         dm_channels = self.discord_api.get_user_channels(self.user_id, False)
         for dm_channel in dm_channels:
-            messages = self.get_message_by_search_result(dm_channel['id'], self.user_id, False)
+            messages = self.get_author_messages_by_search_result(dm_channel['id'], self.user_id, False)
 
             for message in messages:
                 self.discord_api.delete_message(message['channel_id'], message['id'])
@@ -54,7 +54,7 @@ class DiscordRoutines(object):
         
         guild_channels = self.discord_api.get_user_channels(self.user_id, True)
         for guild_channel in guild_channels:
-            messages = self.get_message_by_search_result(guild_channel['id'], self.user_id, True)
+            messages = self.get_author_messages_by_search_result(guild_channel['id'], self.user_id, True)
 
             for message in messages:
                 self.discord_api.delete_message(message['channel_id'], message['id'])
