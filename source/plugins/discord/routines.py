@@ -59,30 +59,20 @@ class DiscordRoutines:
 
         return author_messages
 
+    def sanitize_channel(self, channel_id, author_id, is_guild):
+        messages = self.get_author_messages_by_search_result(channel_id, author_id, is_guild)
+        for index, message in enumerate(messages):
+            self.discord_api.delete_message(message['channel_id'], message['id'])
+            self.logger.info('Deleting (%s/%s) on channel_id', index, len(messages))
+
     def sanitize_account(self):
         dm_channels = self.discord_api.get_user_channels(False).json()
         for dm_channel in dm_channels:
-            messages = self.get_author_messages_by_search_result(
-                dm_channel['id'],
-                self.user_id,
-                False
-            )
-
-            for message in messages:
-                self.discord_api.delete_message(message['channel_id'], message['id'])
-                self.logger.info('Deleting %s: %s', message['id'], message['content'])
+            self.sanitize_channel(channel_id, author_id, False)
 
         guild_channels = self.discord_api.get_user_channels(True).json()
         for guild_channel in guild_channels:
-            messages = self.get_author_messages_by_search_result(
-                guild_channel['id'],
-                self.user_id,
-                True
-            )
-
-            for message in messages:
-                self.discord_api.delete_message(message['channel_id'], message['id'])
-                self.logger.info('Deleting %s: %s', message['id'], message['content'])
+            self.sanitize_channel(channel_id, author_id, True)
 
     def run(self):
         self.sanitize_account()
