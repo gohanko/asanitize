@@ -52,4 +52,4 @@ if __name__ == '__main__':
     ARGS = PARSER.parse_args()
     for ROUTINE in ROUTINES:
         if ARGS.service == ROUTINE['service']:
-            ROUTINE['routine'](ARGS.token)
+            ROUTINE['routine'](ARGS.token).run()

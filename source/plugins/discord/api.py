@@ -22,7 +22,7 @@ class DiscordAPI:
 
     def get_user_channels(self, is_guild):
         user_dms_url = self.build_url('users', '@me', 'guilds' if is_guild else 'channels')
-        return requests.get(user_dms_url, headers=self.headers).json()
+        return requests.get(user_dms_url, headers=self.headers)
 
     def search(self, channel_id, author_id, offset, is_guild):
         search_url = self.build_url(

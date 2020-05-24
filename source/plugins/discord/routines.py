@@ -7,13 +7,14 @@
 
 import time
 from itertools import chain
+from ...logger import create_logger
 from .api import DiscordAPI
 
 class DiscordRoutines:
     def __init__(self, authorization_token):
         self.discord_api = DiscordAPI(authorization_token)
         self.user_id = self.discord_api.get_current_user_id()
-        self.sanitize_account()
+        self.logger = create_logger(__name__)
 
     def filter_search_result_by_user(self, message_groups, author_id):
         if not message_groups:
@@ -36,6 +37,12 @@ class DiscordRoutines:
 
         while True:
             response = self.discord_api.search(channel_id, author_id, search_page * 25, is_guild)
+            self.logger.debug(
+                '%s - %s - %s',
+                self.get_author_messages_by_search_result.__name__,
+                response.status_code,
+                response.json()
+            )
             if response.status_code == 429:
                 time.sleep(response.retry_after)
                 continue
@@ -53,7 +60,7 @@ class DiscordRoutines:
         return author_messages
 
     def sanitize_account(self):
-        dm_channels = self.discord_api.get_user_channels(False)
+        dm_channels = self.discord_api.get_user_channels(False).json()
         for dm_channel in dm_channels:
             messages = self.get_author_messages_by_search_result(
                 dm_channel['id'],
@@ -63,9 +70,9 @@ class DiscordRoutines:
 
             for message in messages:
                 self.discord_api.delete_message(message['channel_id'], message['id'])
-                print('Deleting {}: {}'.format(message['id'], message['content']))
+                self.logger.info('Deleting %s: %s', message['id'], message['content'])
 
-        guild_channels = self.discord_api.get_user_channels(True)
+        guild_channels = self.discord_api.get_user_channels(True).json()
         for guild_channel in guild_channels:
             messages = self.get_author_messages_by_search_result(
                 guild_channel['id'],
@@ -75,4 +82,7 @@ class DiscordRoutines:
 
             for message in messages:
                 self.discord_api.delete_message(message['channel_id'], message['id'])
-                print('Deleting {}: {}'.format(message['id'], message['content']))
+                self.logger.info('Deleting %s: %s', message['id'], message['content'])
+
+    def run(self):
+        self.sanitize_account()
