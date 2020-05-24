@@ -3,7 +3,7 @@ import logging.config
 import yaml
 
 def create_logger(name):
-    with open('./configs/logging.yaml', 'r') as file_handler:
+    with open('./logging_config.yaml', 'r') as file_handler:
         config = yaml.safe_load(file_handler.read())
         logging.config.dictConfig(config)
 
