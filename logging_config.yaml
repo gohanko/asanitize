@@ -17,6 +17,6 @@ handlers:
     encoding: utf8
 loggers:
   source.plugins.discord.routines:
-    level: DEBUG
+    level: INFO
     handlers: [console, debug_file_handler]
     propogate: no
