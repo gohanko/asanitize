@@ -20,13 +20,17 @@ class DiscordAPI:
         current_user_url = self.build_url('users', '@me')
         return requests.get(current_user_url, headers=self.headers).json()['id']
 
-    def get_user_channels(self, is_guild):
-        user_dms_url = self.build_url('users', '@me', 'guilds' if is_guild else 'channels')
+    def get_user_channels(self, should_get_guild):
+        user_dms_url = self.build_url('users', '@me', 'guilds' if should_get_guild else 'channels')
         return requests.get(user_dms_url, headers=self.headers)
 
-    def search(self, channel_id, author_id, offset, is_guild):
+    def get_channel_information(self, channel_id):
+        channel_info_url = self.build_url('channels', channel_id)
+        return requests.get(channel_info_url, headers=self.headers)
+
+    def search(self, channel_id, author_id, offset, should_search_guild):
         search_url = self.build_url(
-            'guilds' if is_guild else 'channels',
+            'guilds' if should_search_guild else 'channels',
             channel_id,
             'messages',
             'search?author_id={}'.format(author_id)
