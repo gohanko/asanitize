@@ -61,18 +61,23 @@ class DiscordRoutines:
 
     def sanitize_channel(self, channel_id, author_id, is_guild):
         messages = self.get_author_messages_by_search_result(channel_id, author_id, is_guild)
+        self.logger.info('Found %s messages from %s on %s', len(messages), author_id, channel_id)
         for index, message in enumerate(messages):
             self.discord_api.delete_message(message['channel_id'], message['id'])
-            self.logger.info('Deleting (%s/%s) on channel_id', index, len(messages))
+            self.logger.info('Deleting (%s/%s) on %s', index + 1, len(messages), channel_id)
 
-    def sanitize_account(self):
+    def sanitize_account(self, dm_channel_whitelist, guild_channel_whitelist):
         dm_channels = self.discord_api.get_user_channels(False).json()
         for dm_channel in dm_channels:
-            self.sanitize_channel(channel_id, author_id, False)
+            dm_channel_id = dm_channel['id']
+            if dm_channel_id not in dm_channel_whitelist:
+                self.sanitize_channel(dm_channel_id, self.user_id, False)
 
         guild_channels = self.discord_api.get_user_channels(True).json()
         for guild_channel in guild_channels:
-            self.sanitize_channel(channel_id, author_id, True)
+            guild_channel_id = guild_channel['id']
+            if guild_channel_id not in guild_channel_whitelist:
+                self.sanitize_channel(guild_channel_id, self.user_id, True)
 
-    def run(self):
-        self.sanitize_account()
+    def run(self, dm_channel_whitelist=[], guild_channel_whitelist=[]):
+        self.sanitize_account(dm_channel_whitelist=dm_channel_whitelist, guild_channel_whitelist=guild_channel_whitelist)
