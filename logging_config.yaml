@@ -16,6 +16,10 @@ handlers:
     filename: ./logs/debug.log
     encoding: utf8
 loggers:
+  source.plugins.discord.channel:
+    level: INFO
+    handlers: [console, debug_file_handler]
+    propogate: no
   source.plugins.discord.routines:
     level: INFO
     handlers: [console, debug_file_handler]
