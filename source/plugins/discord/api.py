@@ -6,6 +6,7 @@
     for bots and we only need a small subset of calls.
 """
 
+import time
 import requests
 
 class DiscordAPI:
@@ -43,4 +44,27 @@ class DiscordAPI:
 
     def delete_message(self, channel_id, message_id):
         message_url = self.build_url('channels', channel_id, 'messages', message_id)
-        return requests.delete(message_url, headers=self.headers)
+        response = requests.delete(message_url, headers=self.headers)
+
+        if response.status_code == 429:
+            time.sleep(int(response.headers.get('retry-after')) / 1000) 
+            response = self.delete_message(channel_id, message_id)
+        
+        return response
+
+    def edit_message(self, channel_id, message_id, message):
+        message_url = self.build_url('channels', channel_id, 'messages', message_id)
+
+        headers = self.headers
+        headers.update({'Content-type': 'application/json'})
+
+        response = requests.patch(
+            message_url,
+            headers=headers,
+            json={'content': message}
+        )
+        if response.status_code == 429:
+            time.sleep(int(response.headers.get('retry-after')) / 1000)
+            response = self.edit_message(channel_id, message_id, message)
+        
+        return response
