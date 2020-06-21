@@ -1,5 +1,6 @@
 import time
 from itertools import chain
+from ..common import random_word
 from ...logger import create_logger
 
 class Channel:
@@ -37,7 +38,7 @@ class Channel:
                 response.json()
             )
             if response.status_code == 429:
-                time.sleep(response.retry_after)
+                time.sleep(int(response.headers.get('retry-after')) / 1000)
                 continue
 
             filtered_messages = self.filter_search_result_by_user(
@@ -57,5 +58,7 @@ class Channel:
 
         self.logger.info('Found %s messages from %s on %s.', len(messages), author_id, self.channel_id)
         for index, message in enumerate(messages):
-            self.logger.info('Deleting (%s/%s) on %s', index + 1, len(messages), self.channel_id)
+            self.logger.info('Editing and deleting (%s/%s) on %s', index + 1, len(messages), self.channel_id)
+            
+            self.discord_api.edit_message(message['channel_id'], message['id'], random_word())
             self.discord_api.delete_message(message['channel_id'], message['id'])

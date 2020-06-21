@@ -18,7 +18,7 @@ handlers:
 loggers:
   source.plugins.discord.channel:
     level: INFO
-    handlers: [console, debug_file_handler]
+    handlers: [console]
     propogate: no
   source.plugins.discord.routines:
     level: INFO
