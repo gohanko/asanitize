@@ -9,18 +9,8 @@ handlers:
     level: DEBUG
     formatter: standard
     stream: ext://sys.stdout
-  debug_file_handler:
-    class: logging.FileHandler
-    level: DEBUG
-    formatter: standard
-    filename: ./logs/debug.log
-    encoding: utf8
 loggers:
-  source.plugins.discord.channel:
+  sanitize.plugins.discord.channel:
     level: INFO
     handlers: [console]
-    propogate: no
-  source.plugins.discord.routines:
-    level: INFO
-    handlers: [console, debug_file_handler]
     propogate: no
