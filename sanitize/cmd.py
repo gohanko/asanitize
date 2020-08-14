@@ -8,7 +8,8 @@
 """
 
 import argparse
-from .plugins.discord.routines import DiscordRoutines
+
+from sanitize.plugins.discord.routines import DiscordRoutines
 
 if __name__ == '__main__':
     COMMANDS = [
