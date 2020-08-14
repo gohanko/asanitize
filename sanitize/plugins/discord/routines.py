@@ -1,10 +1,3 @@
-"""
-    discord/routines.py - Handles our application logic.
-
-    This module handles the routines that we need to
-    sanitize a discord account.
-"""
-
 from sanitize.plugins.discord.api import DiscordAPI
 from sanitize.plugins.discord.channel import Channel
 
@@ -32,14 +25,7 @@ class DiscordRoutines:
             if channel.channel_id == channel_id:
                 channel.sanitize(self.user_id)
 
-    def sanitize_account(self, whitelist):
+    def sanitize_account(self):
         channels = self.serialize_channels()
         for channel in channels:
-            if channel.channel_id not in whitelist:
-                channel.sanitize(self.user_id)
-
-    def run(self, channel_id, whitelist=[]):
-        if channel_id:
-            self.sanitize_channel(channel_id)
-        else:
-            self.sanitize_account(whitelist)
+            channel.sanitize(self.user_id)

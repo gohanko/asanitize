@@ -1,14 +1,19 @@
-"""
-    common.py - Common functions
-
-    Contains common functions shared 
-    between our plugins.
-"""
-
 import random
 import string
+import logging
+import logging.config
+
+import yaml
 
 def random_word():
     """Generates a random word at the length of 2000 characters"""
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(2000))
+
+def create_logger(name):
+    with open('./logging_config.yaml', 'r') as file_handler:
+        config = yaml.safe_load(file_handler.read())
+        logging.config.dictConfig(config)
+
+    logger = logging.getLogger(name)
+    return logger
