@@ -1,9 +1,6 @@
 import time
-
 from itertools import chain
-
-from sanitize.common import random_word
-from sanitize.logger import create_logger
+from sanitize.common import random_word, create_logger
 
 class Channel:
     def __init__(self, discord_api, channel_id, is_guild):
