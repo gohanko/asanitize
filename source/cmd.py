@@ -29,6 +29,15 @@ if __name__ == '__main__':
                 'required': True,
                 'help': 'The service in which the account you want to sanitize resides.'
             },
+        },
+        {
+            'short_arg': '-c',
+            'long_arg': '--channel',
+            'named_parameters': {
+                'type': str,
+                'required': False,
+                'help': 'Deletes messages in specific discord channel.'
+            }
         }
     ]
 
@@ -50,4 +59,4 @@ if __name__ == '__main__':
     ARGS = PARSER.parse_args()
     for ROUTINE in ROUTINES:
         if ARGS.service == ROUTINE['service']:
-            ROUTINE['routine'](ARGS.token).run()
+            ROUTINE['routine'](ARGS.token).run(ARGS.channel)

@@ -26,11 +26,20 @@ class DiscordRoutines:
 
         return serialized_channels
 
+    def sanitize_channel(self, channel_id):
+        channels = self.serialize_channels()
+        for channel in channels:
+            if channel.channel_id == channel_id:
+                channel.sanitize(self.user_id)
+
     def sanitize_account(self, whitelist):
         channels = self.serialize_channels()
         for channel in channels:
             if channel.channel_id not in whitelist:
                 channel.sanitize(self.user_id)
 
-    def run(self, whitelist=[]):
-        self.sanitize_account(whitelist)
+    def run(self, channel_id, whitelist=[]):
+        if channel_id:
+            self.sanitize_channel(channel_id)
+        else:
+            self.sanitize_account(whitelist)
