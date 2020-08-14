@@ -2,7 +2,7 @@ import time
 
 from itertools import chain
 
-from sanitize.plugins.common import random_word
+from sanitize.common import random_word
 from sanitize.logger import create_logger
 
 class Channel:
