@@ -5,8 +5,8 @@
     sanitize a discord account.
 """
 
-from .api import DiscordAPI
-from .channel import Channel
+from sanitize.plugins.discord.api import DiscordAPI
+from sanitize.plugins.discord.channel import Channel
 
 class DiscordRoutines:
     def __init__(self, authorization_token):
