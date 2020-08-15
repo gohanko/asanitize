@@ -9,10 +9,14 @@ def random_word():
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(2000))
 
-def create_logger(name):
-    with open('./logging_config.yaml', 'r') as file_handler:
-        config = yaml.safe_load(file_handler.read())
-        logging.config.dictConfig(config)
+def load_yml(file_path):
+    with open(file_path, 'r') as yml_file:
+        config = yaml.safe_load(yml_file.read())
 
-    logger = logging.getLogger(name)
-    return logger
+    return config
+
+def create_logger(name):
+    config = load_yml('./config/logging_config.yaml')
+    logging.config.dictConfig(config)
+
+    return logging.getLogger(name)
