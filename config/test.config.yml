@@ -1,0 +1,4 @@
+discord:
+    token: 'FakeToken'
+    channel: ''
+    all: true
