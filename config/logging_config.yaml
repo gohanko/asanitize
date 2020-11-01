@@ -14,3 +14,7 @@ loggers:
     level: INFO
     handlers: [console]
     propogate: no
+  sanitize.plugins.reddit.routine:
+    level: INFO
+    handlers: [console]
+    propogate: no
