@@ -11,9 +11,9 @@ def random_word():
 
 def load_yml(file_path):
     with open(file_path, 'r') as yml_file:
-        config = yaml.safe_load(yml_file.read())
+        data = yaml.safe_load(yml_file.read())
 
-    return config
+    return data
 
 def create_logger(name):
     config = load_yml('./config/logging_config.yaml')
