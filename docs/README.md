@@ -7,6 +7,7 @@ A simple commandline tool to sanitize your accounts.
 - Poetry - `pip3 install --user poetry`
 
 ### Quick start
+Inside the project folder, run
 
 - `poetry install`
 - `python -m sanitize.cmd <service> --token=veryfaketokendesu --all`
