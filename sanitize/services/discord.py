@@ -63,7 +63,6 @@ class DiscordAPI:
         
         return response
 
-
 class Channel:
     def __init__(self, discord_api, channel_id, is_guild):
         self.discord_api = discord_api
@@ -123,7 +122,6 @@ class Channel:
             
             self.discord_api.edit_message(message['channel_id'], message['id'], random_word())
             self.discord_api.delete_message(message['channel_id'], message['id'])
-
 
 class Routine:
     def __init__(self, authorization_token):
