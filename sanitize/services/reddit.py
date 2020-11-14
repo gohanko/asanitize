@@ -2,7 +2,7 @@ import praw
 from prawcore import ResponseException
 from sanitize.common import random_word, create_logger
 
-class Routine(object):
+class Routine:
     def __init__(self, client_id, client_secret, username, password, two_factor=None):
         self.logger = create_logger(__name__)
         self.username = username
