@@ -1,0 +1,9 @@
+discord:
+    token: ''
+    channel: ''
+    all: true
+reddit:
+    client_id: ''
+    client_secret: ''
+    username: ''
+    password: ''

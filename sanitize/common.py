@@ -14,9 +14,3 @@ def load_yml(file_path):
         data = yaml.safe_load(yml_file.read())
 
     return data
-
-def create_logger(name):
-    config = load_yml('./config/logging_config.yaml')
-    logging.config.dictConfig(config)
-
-    return logging.getLogger(name)
