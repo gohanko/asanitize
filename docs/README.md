@@ -10,7 +10,7 @@ A simple commandline tool to sanitize your accounts.
 Inside the project folder, run
 
 - `poetry install`
-- `python -m sanitize.cmd <service> --token=veryfaketokendesu --all`
+- `python -m sanitize --help`
 
 ## LICENSE
 This project is license under GNU General Public License v3.0. For more information, see `LICENSE`.
