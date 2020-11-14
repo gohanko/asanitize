@@ -1,10 +1,9 @@
 import praw
 from prawcore import ResponseException
-from sanitize.common import random_word, create_logger
+from sanitize.common import random_word
 
-class Routine:
+class RedditRoutine:
     def __init__(self, client_id, client_secret, username, password, two_factor=None):
-        self.logger = create_logger(__name__)
         self.username = username
         self.reddit = self._login(
             client_id, 
@@ -39,25 +38,13 @@ class Routine:
         while True:
             comments = self.reddit.redditor(self.username).comments.new(limit=None)
             for comment in comments:
-                self.logger.info(
-                    '[%s] Comment ID %s by %s',
-                    self.sanitize_all.__name__,
-                    comment,
-                    self.username,
-                )
-
+                print('Editing and deleting the following comment by {}: {}'.format(self.username, comment))
                 comment.edit(random_word())
                 comment.delete()
 
             submissions = self.reddit.redditor(self.username).submissions.new(limit=None)
             for submission in submissions:
-                self.logger.info(
-                    '[%s] Submission ID %s by %s',
-                    self.sanitize_all.__name__,
-                    submission,
-                    self.username,
-                )
-
+                print('Editing and deleting the following submission by {}: {}'.format(self.username, submission))
                 submission.edit(random_word())
                 submission.delete()
 

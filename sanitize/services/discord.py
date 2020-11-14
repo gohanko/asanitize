@@ -1,7 +1,7 @@
 import time
 import requests
 from itertools import chain
-from sanitize.common import random_word, create_logger
+from sanitize.common import random_word
 
 class DiscordAPI:
     def __init__(self, authorization_token):
@@ -67,7 +67,6 @@ class Channel:
     def __init__(self, discord_api, channel_id, is_guild):
         self.discord_api = discord_api
         self.channel_id = channel_id
-        self.logger = create_logger(__name__)
         self.is_guild = is_guild
 
     def filter_search_result_by_user(self, message_groups, author_id):
@@ -91,12 +90,8 @@ class Channel:
 
         while True:
             response = self.discord_api.search(self.channel_id, author_id, search_page * 25, self.is_guild)
-            self.logger.debug(
-                '%s - %s - %s',
-                self.search_messages_by_user.__name__,
-                response.status_code,
-                response.json()
-            )
+            print('Looking for messages: [{}] {}'.format(response.status_code, response.json()))
+
             if response.status_code == 429:
                 time.sleep(int(response.headers.get('retry-after')) / 1000)
                 continue
@@ -116,14 +111,14 @@ class Channel:
     def sanitize(self, author_id):
         messages = self.search_messages_by_user(author_id)
 
-        self.logger.info('Found %s messages from %s on %s.', len(messages), author_id, self.channel_id)
+        print('Found {} messages from {} in {}'.format(len(messages), author_id, self.channel_id))
         for index, message in enumerate(messages):
-            self.logger.info('Editing and deleting (%s/%s) on %s', index + 1, len(messages), self.channel_id)
-            
+            print('Editing and deleting ({}/{}) in {}'.format(index + 1, len(messages), self.channel_id))
+
             self.discord_api.edit_message(message['channel_id'], message['id'], random_word())
             self.discord_api.delete_message(message['channel_id'], message['id'])
 
-class Routine:
+class DiscordRoutine:
     def __init__(self, authorization_token):
         self.discord_api = DiscordAPI(authorization_token)
         self.user_id = self.discord_api.get_current_user_id()

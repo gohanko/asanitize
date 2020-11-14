@@ -1,41 +1,39 @@
 from cleo import Application, Command
 from sanitize.common import load_yml
 from sanitize.errors import ArgumentIsNotFound
-from sanitize.services.discord import Routine
-from sanitize.services.reddit import Routine
+from sanitize.services.discord import DiscordRoutine
+from sanitize.services.reddit import RedditRoutine
 
 class DiscordCommand(Command):
     """
     Commands to sanitize a discord account.
 
     discord
-        {--t|token=? : Must be set. It is used to authenticated into a particular account.}
-        {--c|channel=? : If set, it will only clean that particular channel.}
-        {--a|all : If set, it will clean all the channels found in a discord account.}
+        {--a|auth_token=? : Must be set. It is used to authenticated into a particular account.}
+        {--t|target=? : Must be set. Values are either the channel id that you want to sanitize or the string 'all' to clean everything.}
         {--f|file=? : Config file so users don't have to type everything.}
     """
     def handle(self):
         config_file = self.option('file')
         if config_file:
-            config = load_yml(self.option('file')['discord'])
+            config = load_yml(config_file)['discord']
+            token = config['auth_token']
+            target = config['target']
         else:
-            config = {
-                'token': self.option('token'),
-                'channel': self.option('channel'),
-                'all': self.option('all'),
-            }
+            token = self.option('auth_token')
+            target = self.option('target')
 
-        self.execute(**config)
-
-    def execute(self, token, channel, all):
         if not token:
-            raise ArgumentIsNotFound('Token is not found')
+            print('Token is not found!')
 
-        if channel:
-            DiscordRoutines(token).sanitize_channel(channel)
-        
-        if all:
-            DiscordRoutines(token).sanitize_account()
+        if not target:
+            print('Target is not found!')
+
+        routine = DiscordRoutine(token)
+        if target == 'all':
+            routine.sanitize_account()
+        else:
+            routine.sanitize_channel(target)
 
 class RedditCommand(Command):
     """
@@ -55,7 +53,7 @@ class RedditCommand(Command):
         password = self.option('password')
         two_factor = self.option('two-factor')
 
-        routine = Routine(client_id, client_secret, username, password, two_factor)
+        routine = RedditRoutine(client_id, client_secret, username, password, two_factor)
         routine.sanitize_all()
 
 def handle_command():
