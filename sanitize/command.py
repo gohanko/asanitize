@@ -9,7 +9,7 @@ class DiscordCommand(Command):
     Commands to sanitize a discord account.
 
     discord
-        {--a|auth_token=? : Must be set. It is used to authenticated into a particular account.}
+        {--a|auth-token=? : Must be set. It is used to authenticated into a particular account.}
         {--t|target=? : Must be set. Values are either the channel id that you want to sanitize or the string 'all' to clean everything.}
         {--f|file=? : Config file so users don't have to type everything.}
     """
@@ -17,17 +17,19 @@ class DiscordCommand(Command):
         config_file = self.option('file')
         if config_file:
             config = load_yml(config_file)['discord']
-            token = config['auth_token']
+            token = config['auth-token']
             target = config['target']
         else:
-            token = self.option('auth_token')
+            token = self.option('auth-token')
             target = self.option('target')
 
         if not token:
             print('Token is not found!')
+            return
 
         if not target:
             print('Target is not found!')
+            return
 
         routine = DiscordRoutine(token)
         if target == 'all':
