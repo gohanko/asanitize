@@ -67,7 +67,9 @@ class API:
             json={'content': message}
         )
         if response.status_code == 429:
-            time.sleep(int(response.headers.get('retry-after')) / 1000)
+            sleep_interval = int(response.headers.get('retry-after')) / 1000
+            print('API returned 429, waiting for {} seconds before proceeding...'.format(sleep_interval))
+            time.sleep(sleep_interval)
             response = self.edit_message(channel_id, message_id, message)
         
         return response
@@ -102,7 +104,9 @@ class Channel:
             print('Looking for messages: [{}] {}'.format(response.status_code, response.json()))
 
             if response.status_code == 429:
-                time.sleep(int(response.headers.get('retry-after')) / 1000)
+                sleep_interval = int(response.headers.get('retry-after')) / 1000
+                print('API returned 429, waiting for {} seconds before proceeding...'.format(sleep_interval))
+                time.sleep(sleep_interval)
                 continue
 
             filtered_messages = self.filter_search_result_by_user(
