@@ -1,12 +1,21 @@
 import time
+import sys
 import requests
 from itertools import chain
 from sanitize.common import random_word
 
-class DiscordAPI:
+class API:
     def __init__(self, authorization_token):
         self.api_endpoint = 'https://discordapp.com/api'
         self.headers = {'Authorization': authorization_token}
+        if not self._is_token_valid(authorization_token):
+            print('Token is not valid')
+            sys.exit(0)
+
+    def _is_token_valid(self, token):
+        current_user_url = self.build_url('users', '@me')
+        response = requests.get(current_user_url, headers=self.headers)
+        return response.status_code != 401
 
     def build_url(self, *paths):
         return '/'.join([self.api_endpoint, *paths])
@@ -120,7 +129,7 @@ class Channel:
 
 class DiscordRoutine:
     def __init__(self, authorization_token):
-        self.discord_api = DiscordAPI(authorization_token)
+        self.discord_api = API(authorization_token)
         self.user_id = self.discord_api.get_current_user_id()
 
     def serialize_channels(self):
