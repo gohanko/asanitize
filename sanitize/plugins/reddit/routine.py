@@ -36,28 +36,32 @@ class Routine(object):
             return False
 
     def sanitize_all(self):
-        comments = self.reddit.redditor(self.username).comments.new(limit=None)
-        for comment in comments:
-            self.logger.info(
-                '[%s] Comment ID %s by %s',
-                self.sanitize_all.__name__,
-                comment,
-                self.username,
-            )
+        while True:
+            comments = self.reddit.redditor(self.username).comments.new(limit=None)
+            for comment in comments:
+                self.logger.info(
+                    '[%s] Comment ID %s by %s',
+                    self.sanitize_all.__name__,
+                    comment,
+                    self.username,
+                )
 
-            comment.edit(random_word())
-            comment.delete()
+                comment.edit(random_word())
+                comment.delete()
 
-        submissions = self.reddit.redditor(self.username).submissions.new(limit=None)
-        for submission in submissions:
-            self.logger.info(
-                '[%s] Submission ID %s by %s',
-                self.sanitize_all.__name__,
-                submission,
-                self.username,
-            )
+            submissions = self.reddit.redditor(self.username).submissions.new(limit=None)
+            for submission in submissions:
+                self.logger.info(
+                    '[%s] Submission ID %s by %s',
+                    self.sanitize_all.__name__,
+                    submission,
+                    self.username,
+                )
 
-            submission.edit(random_word())
-            submission.delete()
+                submission.edit(random_word())
+                submission.delete()
+
+            if not comments or not submissions:
+                break
 
         return True
