@@ -48,7 +48,7 @@ class RedditRoutine:
                 submission.edit(random_word())
                 submission.delete()
 
-            if not comments or not submissions:
+            if not comments and not submissions:
                 break
 
         return True
