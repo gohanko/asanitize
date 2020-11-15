@@ -1,5 +1,6 @@
 import time
 import sys
+import math
 import requests
 from itertools import chain
 from sanitize.common import random_word
@@ -75,61 +76,32 @@ class API:
         return response
 
 class Channel:
-    def __init__(self, discord_api, channel_id, is_guild):
+    def __init__(self, discord_api, channel_name, channel_id, is_guild):
         self.discord_api = discord_api
+        self.channel_name = channel_name
         self.channel_id = channel_id
         self.is_guild = is_guild
 
-    def filter_search_result_by_user(self, message_groups, author_id):
-        if not message_groups:
+    def sanitize(self, author_id):
+        print('Sanitizing channel: {}'.format(self.channel_name))
+        response = self.discord_api.search(self.channel_id, author_id, 0, self.is_guild).json()
+        total_results = response.get('total_results')
+        if not total_results:
             return None
 
-        messages = list(chain.from_iterable(message_groups))
-
         messages_seen = []
-        author_messages = []
-        for message in messages:
-            if message['author']['id'] == author_id and message['id'] not in messages_seen:
-                author_messages.append(message)
-                messages_seen.append(message['id'])
 
-        return author_messages
-    
-    def search_messages_by_user(self, author_id):
-        search_page = 0
-        user_messages = []
+        total_pages = math.ceil(total_results / 25)
+        for page in range(total_pages):
+            response = self.discord_api.search(self.channel_id, author_id, page * 25, self.is_guild).json()
 
-        while True:
-            response = self.discord_api.search(self.channel_id, author_id, search_page * 25, self.is_guild)
-            print('Looking for messages: [{}] {}'.format(response.status_code, response.json()))
-
-            if response.status_code == 429:
-                sleep_interval = int(response.headers.get('retry-after')) / 1000
-                print('API returned 429, waiting for {} seconds before proceeding...'.format(sleep_interval))
-                time.sleep(sleep_interval)
-                continue
-
-            filtered_messages = self.filter_search_result_by_user(
-                response.json().get('messages'),
-                author_id
-            )
-            if filtered_messages:
-                user_messages.extend(filtered_messages)
-                search_page += 1
-            else:
-                break
-
-        return user_messages
-
-    def sanitize(self, author_id):
-        messages = self.search_messages_by_user(author_id)
-
-        print('Found {} messages from {} in {}'.format(len(messages), author_id, self.channel_id))
-        for index, message in enumerate(messages):
-            print('Editing and deleting ({}/{}) in {}'.format(index + 1, len(messages), self.channel_id))
-
-            self.discord_api.edit_message(message['channel_id'], message['id'], random_word())
-            self.discord_api.delete_message(message['channel_id'], message['id'])
+            messages = list(chain.from_iterable(response.get('messages')))
+            for message in messages:
+                if message['author']['id'] == author_id and message['id'] not in messages_seen:
+                    print('Editing and deleting ({}/{}) in {}'.format(len(messages_seen) + 1, total_results, self.channel_name))
+                    self.discord_api.edit_message(message['channel_id'], message['id'], random_word())
+                    self.discord_api.delete_message(message['channel_id'], message['id'])
+                    messages_seen.append(message['id'])
 
 class DiscordRoutine:
     def __init__(self, authorization_token):
@@ -141,11 +113,11 @@ class DiscordRoutine:
 
         dm_channels = self.discord_api.get_user_channels(should_get_guild=False).json()
         for dm_channel in dm_channels:
-            serialized_channels.append(Channel(self.discord_api, dm_channel['id'], False))
+            serialized_channels.append(Channel(self.discord_api, 'DM Channel', dm_channel['id'], False))
         
         guild_channels = self.discord_api.get_user_channels(should_get_guild=True).json()
         for guild_channel in guild_channels:
-            serialized_channels.append(Channel(self.discord_api, guild_channel['id'], True))
+            serialized_channels.append(Channel(self.discord_api, guild_channel['name'], guild_channel['id'], True))
 
         return serialized_channels
 
