@@ -108,26 +108,32 @@ class DiscordRoutine:
         self.discord_api = API(authorization_token)
         self.user_id = self.discord_api.get_current_user_id()
 
+    def _generate_dm_channel_name(self, channel):
+        recipients = []
+        for recipient in channel['recipients']:
+            recipients.append(recipient['username'])
+
+        channel_name = ', '.join(recipients)
+        return 'DM Chat with {}'.format(channel_name)
+
     def serialize_channels(self):
-        serialized_channels = []
+        serialized_channels = {}
 
         dm_channels = self.discord_api.get_user_channels(should_get_guild=False).json()
         for dm_channel in dm_channels:
-            serialized_channels.append(Channel(self.discord_api, 'DM Channel', dm_channel['id'], False))
+            serialized_channels[dm_channel['id']] = Channel(self.discord_api, self._generate_dm_channel_name(dm_channel), dm_channel['id'], False)
         
         guild_channels = self.discord_api.get_user_channels(should_get_guild=True).json()
         for guild_channel in guild_channels:
-            serialized_channels.append(Channel(self.discord_api, guild_channel['name'], guild_channel['id'], True))
+            serialized_channels[guild_channel['id']] = Channel(self.discord_api, guild_channel['name'], guild_channel['id'], True)
 
         return serialized_channels
 
     def sanitize_channel(self, channel_id):
-        channels = self.serialize_channels()
-        for channel in channels:
-            if channel.channel_id == channel_id:
-                channel.sanitize(self.user_id)
+        channel = self.serialize_channels().get(channel_id)
+        channel.sanitize(self.user_id)
 
     def sanitize_account(self):
         channels = self.serialize_channels()
-        for channel in channels:
+        for channel in channels.values():
             channel.sanitize(self.user_id)
