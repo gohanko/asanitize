@@ -1,6 +1,5 @@
 from cleo import Application, Command
 from sanitize.common import load_yml
-from sanitize.errors import ArgumentIsNotFound
 from sanitize.services.discord import DiscordRoutine
 from sanitize.services.reddit import RedditRoutine
 

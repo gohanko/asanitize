@@ -1,2 +1,0 @@
-class ArgumentIsNotFound(Exception):
-    pass
