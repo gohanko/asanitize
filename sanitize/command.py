@@ -4,8 +4,6 @@ from sanitize.common import load_config_from_file
 from sanitize.services.discord import DiscordRoutine
 from sanitize.services.reddit import RedditRoutine
 
-activated_services = ['discord', 'reddit']
-
 # https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
 class Command:
     def __init__(self):
@@ -13,7 +11,7 @@ class Command:
         parser.add_argument('service', help='Select the service to be sanitize. Currently supports \'discord\' and \'reddit\'.')
         
         args = parser.parse_args(sys.argv[1:2])
-        if not hasattr(self, args.service) and args.service in activated_services:
+        if not hasattr(self, args.service):
             print('Unrecognized service')
             parser.print_help()
             exit(1)
