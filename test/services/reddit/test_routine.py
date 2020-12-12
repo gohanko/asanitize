@@ -1,7 +1,6 @@
 import unittest
 from sanitize.common import load_yml
-
-from sanitize.services.reddit.routine import RedditRoutine
+from sanitize.services.reddit import RedditRoutine
 
 class TestRoutine(unittest.TestCase):
     def test__login(self):
