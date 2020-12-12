@@ -8,6 +8,6 @@ def random_word():
 
 def load_config_from_file(file_path, service):
     with open(file_path, 'r') as yml_file:
-        data = yaml.safe_load(yml_file.read())
+        config = yaml.safe_load(yml_file.read())
 
-    return data.get(service)
+    return config.get(service)
