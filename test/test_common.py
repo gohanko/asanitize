@@ -7,5 +7,5 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(len(words), 2000)
 
     def test_load_yml(self):
-        data = load_yml('./fixtures/test.config.yml')
+        data = load_yml('./test/test.config.yml')
         self.assertEqual(isinstance(data, object), True)
