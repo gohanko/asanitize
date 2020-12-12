@@ -1,5 +1,4 @@
-from sanitize.command import create_cleo_app
+from sanitize.command import Command
 
 if __name__ == '__main__':
-    cleo_app = create_cleo_app()
-    cleo_app.run()
+    Command()
