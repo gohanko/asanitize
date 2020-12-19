@@ -1,7 +1,7 @@
 # asanitize
 A simple commandline tool to bulk delete messages/posts from your social media accounts. Please beware that using this tool on some services such as Discord is against their TOS and you might get banned.
 
-## Installation (not available yet, under work)
+## Installation
 `asanitize` is supported on Python 3.6+. The recommended way to install `asanitize` is via [pip](https://pypi.org/project/pip/)
 
 ```bash
