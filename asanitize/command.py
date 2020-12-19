@@ -42,7 +42,7 @@ class Command:
         parser.add_argument('client_secret', help='Must be set. Client secret used to authenticate.')
         parser.add_argument('username', help='Must be set. Username of the account.')
         parser.add_argument('password', help='Must be set. Password of the account.')
-        parser.add_argument('two_factor', help='Set if you have two factor authentication on your account.')
+        parser.add_argument('--two_factor', help='Set if you have two factor authentication on your account.')
         parser.add_argument('--file', help='Set if you have a config file containing the authentication details. Please have a look at example.env.yml for example on how to create one.')
 
         parsed_arguments = parser.parse_args(args)

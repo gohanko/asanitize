@@ -1,4 +1,5 @@
 import praw
+from praw.exceptions import RedditAPIException
 from prawcore import ResponseException
 from asanitize.common import random_word
 
@@ -45,10 +46,13 @@ class RedditRoutine:
             submissions = self.reddit.redditor(self.username).submissions.new(limit=None)
             for submission in submissions:
                 print('Editing and deleting the following submission by {}: {}'.format(self.username, submission))
-                submission.edit(random_word())
+
+                if submission.is_self:
+                    submission.edit(random_word())
+
                 submission.delete()
 
-            if not comments and not submissions:
+            if not list(comments) and not list(submissions):
                 break
 
         return True
