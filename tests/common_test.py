@@ -1,4 +1,4 @@
-from sanitize.common import random_word, load_config_from_file
+from asanitize.common import random_word, load_config_from_file
 
 def test_random_word():
     words = random_word()

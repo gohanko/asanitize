@@ -3,7 +3,7 @@ import sys
 import math
 import requests
 from itertools import chain
-from sanitize.common import random_word
+from asanitize.common import random_word
 
 class API:
     def __init__(self, authorization_token):
