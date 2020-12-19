@@ -1,13 +1,13 @@
 import sys
 import argparse
-from sanitize.common import load_config_from_file
-from sanitize.services.discord import DiscordRoutine
-from sanitize.services.reddit import RedditRoutine
+from asanitize.common import load_config_from_file
+from asanitize.services.discord import DiscordRoutine
+from asanitize.services.reddit import RedditRoutine
 
 # https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
 class Command:
     def __init__(self):
-        parser = argparse.ArgumentParser(prog='sanitize.py', description='Software to sanitize your online accounts.')
+        parser = argparse.ArgumentParser(prog='asanitize.py', description='Software to sanitize your online accounts.')
         parser.add_argument('service', help='Select the service to be sanitize. Currently supports \'discord\' and \'reddit\'.')
         
         args = parser.parse_args(sys.argv[1:2])
@@ -19,7 +19,7 @@ class Command:
         getattr(self, args.service)(sys.argv[2:])
 
     def discord(self, args):
-        parser = argparse.ArgumentParser(prog='sanitize.py discord', description='Command to sanitize a discord account.')
+        parser = argparse.ArgumentParser(prog='asanitize.py discord', description='Command to sanitize a discord account.')
         parser.add_argument('token', help='Must be set. It is used to access a particular account to perform sanitization tasks.')
         parser.add_argument('channel', help='Must be set. Values are either the channel id that you want to sanitize or the string \'all\' to clean everything.')
         parser.add_argument('--file', help='Set if you have a config file containing the authentication details. Please have a look at example.env.yml for example on how to create one.')
@@ -37,7 +37,7 @@ class Command:
             routine.sanitize_channel(config.get('channel'))
 
     def reddit(self, args):
-        parser = argparse.ArgumentParser(prog='sanitize.py reddit', description='Command to sanitize a reddit account.')
+        parser = argparse.ArgumentParser(prog='asanitize.py reddit', description='Command to sanitize a reddit account.')
         parser.add_argument('client_id', help='Must be set. Client ID used to authenticate.')
         parser.add_argument('client_secret', help='Must be set. Client secret used to authenticate.')
         parser.add_argument('username', help='Must be set. Username of the account.')
