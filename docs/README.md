@@ -32,7 +32,8 @@ The currently supported services are `discord`, and `reddit`. There are plans to
 
 > NOTE: A "service/services" is the name used to describe what service you want to sanitize, e.g `discord` is for the Discord messaging system, and `reddit` is for the Reddit social media platform.
 
-### Configuration Files
+Configuration Files
+-------------------
 
 For users who wants to automate the task, `asanitize` also allows for the use of configuration files. This will allow users to set authentication tokens as well as different behaviours without typing it out everytime.
 
