@@ -25,10 +25,10 @@ class Command:
         parser.add_argument('--file', help='Set if you have a config file containing the authentication details. Please have a look at example.env.yml for example on how to create one.')
 
         parsed_arguments = parser.parse_args(args)
-        if args.file:
-            config = load_config_from_file(args.file, 'discord')
+        if parsed_arguments.file is not None:
+            config = load_config_from_file(parsed_arguments.file, 'discord')
         else:
-            config = { 'token': args.token, 'channel': args.channel }
+            config = { 'token': parsed_arguments.token, 'channel': parsed_arguments.channel }
 
         routine = DiscordRoutine(config.get('token'))
         if config.get('channel') == 'all':
@@ -46,15 +46,15 @@ class Command:
         parser.add_argument('--file', help='Set if you have a config file containing the authentication details. Please have a look at example.env.yml for example on how to create one.')
 
         parsed_arguments = parser.parse_args(args)
-        if args.file:
-            config = load_config_from_file(args.file, 'reddit')
+        if parsed_arguments.file:
+            config = load_config_from_file(parsed_arguments.file, 'reddit')
         else:
             config = {
-                'client_id': args.client_id,
-                'client_secret': args.client_secret,
-                'username': args.username,
-                'password': args.password,
-                'two_factor': args.two_factor
+                'client_id': parsed_arguments.client_id,
+                'client_secret': parsed_arguments.client_secret,
+                'username': parsed_arguments.username,
+                'password': parsed_arguments.password,
+                'two_factor': parsed_arguments.two_factor
             }
 
         routine = RedditRoutine(
