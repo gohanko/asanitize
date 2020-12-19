@@ -20,7 +20,7 @@ You can also install this manually using commandline by
 ## Usage
 After installing the software, you can visit the help page via `python -m asanitize -h` for help on how to use it. 
 
-Please keep in mind that every service has its own help page as well, running `python -m asanitize discord -h` will show you the help page for the discord sanitize while running `python -m asanitize reddit -h` will show you the help page for reddit.
+Please keep in mind that every service has its own help page as well, running `python -m asanitize discord -h` will show you the help page for the discord sanitizer while running `python -m asanitize reddit -h` will show you the help page for the reddit sanitizer.
 
 The currently supported services are `discord`, and `reddit`. There are plans to add `twitter` and `telegram` as well but I haven't gotten around to doing that.
 
