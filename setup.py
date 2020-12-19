@@ -7,7 +7,7 @@ setuptools.setup(
     name='asanitize',
     version='0.0.1',
     author='Brandon',
-    author_email='pleasecontactmeongithub@localhost',
+    author_email='pleasecontactmeongithub@localhost.local',
     description='A simple commandline tool to bulk delete messages/posts from your social media accounts.',
     long_description=long_description,
     url='https://github.com/gohanko/asanitize',
@@ -19,7 +19,7 @@ setuptools.setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GPLv3 License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
