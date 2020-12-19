@@ -5,14 +5,14 @@ with open('docs/README.md', 'r', encoding='UTF-8') as fh:
 
 setuptools.setup(
     name='asanitize',
-    version='0.0.5',
+    version='0.0.6',
     author='Brandon',
     author_email='pleasecontactmeongithub@localhost.local',
     description='A simple commandline tool to bulk delete messages/posts from your social media accounts.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/gohanko/asanitize',
-    packages=setuptools.find_packages(include=['asanitize']),
+    packages=setuptools.find_packages(include=['asanitize', 'asanitize.*']),
     install_requires=[
         'praw==7.1.0',
         'PyYAML==5.3.1',
