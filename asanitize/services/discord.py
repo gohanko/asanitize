@@ -38,7 +38,7 @@ class API:
             'guilds' if should_search_guild else 'channels',
             channel_id,
             'messages',
-            'search?author_id={}'.format(author_id)
+            'search?author_id={}&include_nsfw=true'.format(author_id),
         )
 
         if offset:
@@ -84,21 +84,19 @@ class Channel:
 
     def sanitize(self, author_id):
         print('Sanitizing channel: {}'.format(self.channel_name))
-        response = self.discord_api.search(self.channel_id, author_id, 0, self.is_guild).json()
-        total_results = response.get('total_results')
-        if not total_results:
-            return None
+        total_result = self.discord_api.search(self.channel_id, author_id, 0, self.is_guild).json().get('total_results')
 
         messages_seen = []
-
-        total_pages = math.ceil(total_results / 25)
-        for page in range(total_pages):
-            response = self.discord_api.search(self.channel_id, author_id, page * 25, self.is_guild).json()
+        while True:
+            response = self.discord_api.search(self.channel_id, author_id, 0, self.is_guild).json()
+            if not response.get('total_results'):
+                print('No messages left!')
+                break
 
             messages = list(chain.from_iterable(response.get('messages')))
             for message in messages:
                 if message['author']['id'] == author_id and message['id'] not in messages_seen:
-                    print('Editing and deleting ({}/{}) in {}'.format(len(messages_seen) + 1, total_results, self.channel_name))
+                    print('Editing and deleting ({}/{}) in {}'.format(len(messages_seen) + 1, total_result, self.channel_name))
                     self.discord_api.edit_message(message['channel_id'], message['id'], random_word())
                     self.discord_api.delete_message(message['channel_id'], message['id'])
                     messages_seen.append(message['id'])
