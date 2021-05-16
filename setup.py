@@ -5,7 +5,7 @@ with open('docs/README.md', 'r', encoding='UTF-8') as fh:
 
 setuptools.setup(
     name='asanitize',
-    version='0.1.0',
+    version='0.1.1',
     author='Brandon',
     author_email='pleasecontactmeongithub@localhost.local',
     description='A simple commandline tool to bulk delete messages/posts from your social media accounts.',
