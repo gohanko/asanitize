@@ -18,8 +18,7 @@ For users who wants to automate the task, `asanitize` also allows for the use of
 
 You can tell `asanitize` which file to look at by using the `--file` flag after selecting which service you want to use. For example, `python -m sanitize <service> --file <location>`.
 
-Example:
-
+Config example:
 ```yaml
 discord:
     token: 'invalid_token'
