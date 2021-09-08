@@ -16,7 +16,7 @@ After installing the software, you can visit the help page via `python -m asanit
 ### Configuration Files
 For users who wants to automate the task, `asanitize` also allows for the use of configuration files. This will allow users to set authentication tokens as well as different behaviours without typing it out everytime.
 
-You can tell `asanitize` which file to look at by using the `--file` flag after selecting which service you want to use, e.g `python -m sanitize <discord|reddit> --file /home/nobody/env.yml`.
+You can tell `asanitize` which file to look at by using the `--file` flag after selecting which service you want to use. For example, `python -m sanitize <service> --file <location>`.
 
 Example:
 
