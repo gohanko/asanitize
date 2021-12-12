@@ -84,7 +84,11 @@ class Channel:
 
     def sanitize(self, author_id):
         print('Sanitizing channel: {}'.format(self.channel_name))
-        total_result = self.discord_api.search(self.channel_id, author_id, 0, self.is_guild).json().get('total_results')
+
+        # Make sure total_result is never unqueried.
+        total_result = 0
+        while total_result == 0:
+            total_result = self.discord_api.search(self.channel_id, author_id, 0, self.is_guild).json().get('total_results')
 
         messages_seen = []
         while True:
