@@ -1,5 +1,4 @@
 import time
-import pprint
 from dataclasses import dataclass, field
 from asanitize.services.discord.api import session, build_url
 from asanitize.common import random_word
