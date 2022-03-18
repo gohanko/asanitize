@@ -84,7 +84,7 @@ class Message:
     components: list = field(default_factory=list)
     hit: bool = False
 
-    def edit(self, new_content):
+    def edit(self, new_content: str) -> None:
         edit_message_url = build_url('channels', self.channel_id, 'messages', self.id)
         response = session.patch(
             edit_message_url, 
@@ -110,7 +110,7 @@ class Message:
             time.sleep(sleep_interval)
             self.delete()
 
-    def sanitize(self, is_fast_mode):
+    def sanitize(self, is_fast_mode: bool) -> None:
         if not is_fast_mode:
             self.edit(random_word())
 
@@ -120,7 +120,7 @@ class Message:
 class MessageList:
     messages: list[Message] = field(default_factory=list)
 
-    def __init__(self, message_list):
+    def __init__(self, message_list: dict) -> None:
         self.messages = []
 
         for message in message_list.get('messages'):
@@ -144,7 +144,7 @@ class MessageList:
                 hit=message[0].get('hit'),
             ))
 
-    def sanitize_all(self, is_fast_mode: bool):
+    def sanitize_all(self, is_fast_mode: bool) -> None:
         for index, message in enumerate(self.messages):
             print('    Sanitizing ({}/{})'.format(index + 1, len(self.messages)))
             message.sanitize(is_fast_mode)
@@ -336,7 +336,7 @@ class BaseChannelList(object):
                 return True
         return False
 
-    def _get_info_text(self, channel):
+    def _get_info_text(self, channel) -> str:
         try:
             recipients = ', '.join(['{}#{}'.format(recipient.username, recipient.discriminator) for recipient in channel.recipients])
         except AttributeError:
