@@ -146,7 +146,7 @@ class MessageList:
 
     def sanitize_all(self, is_more_secure: bool):
         for index, message in enumerate(self.messages):
-            print('Sanitizing ({}/{})'.format(index + 1, len(self.messages)))
+            print('    Sanitizing ({}/{})'.format(index + 1, len(self.messages)))
             message.sanitize(is_more_secure)
 
 @dataclass
@@ -313,6 +313,9 @@ class Guild:
 
     def sanitize(self, author_id: str, is_more_secure: bool) -> None:
         messages = self.search(author_id, 0)
+        if len(messages.messages) < 1:
+            print('    No messages found! Skipping...')
+        
         messages.sanitize_all(is_more_secure)
 
 @dataclass
@@ -340,12 +343,12 @@ class GuildList:
     def sanitize(self, author_id: str, channel_id: str) -> None:
         for guild in self.guilds:
             if channel_id == guild.id:
-                print('Sanitizing {}'.format(guild.name))
+                print('Sanitizing guild {} :'.format(guild.name))
                 guild.sanitize(author_id)
 
     def sanitize_all(self, author_id: str, is_more_secure: bool) -> None:
         for guild in self.guilds:
-            print('Sanitizing {}'.format(guild.name))
+            print('Sanitizing guild {} :'.format(guild.name))
             guild.sanitize(author_id, is_more_secure)
 
 @dataclass
@@ -371,6 +374,9 @@ class DirectMessageChannel:
 
     def sanitize(self, author_id: str, is_more_secure: bool) -> None:
         messages = self.search(author_id, 0)
+        if len(messages.messages) < 1:
+            print('    No messages found! Skipping...')
+
         messages.sanitize_all(is_more_secure)
 
 @dataclass
@@ -409,8 +415,10 @@ class DirectMessageChannelList:
     def sanitize(self, author_id: str, channel_id: str, is_more_secure: bool) -> None:
         for direct_message_channel in self.direct_message_channels:
             if direct_message_channel.id == channel_id:
+                print('Sanitizing chat with {} :'.format(', '.join(['{}#{}'.format(recipient.username, recipient.discriminator) for recipient in direct_message_channel.recipients])))
                 direct_message_channel.sanitize(author_id, is_more_secure)
 
     def sanitize_all(self, author_id: str, is_more_secure: bool) -> None:
         for direct_message_channel in self.direct_message_channels:
+            print('Sanitizing chat with {} :'.format(', '.join(['{}#{}'.format(recipient.username, recipient.discriminator) for recipient in direct_message_channel.recipients])))
             direct_message_channel.sanitize(author_id, is_more_secure)
