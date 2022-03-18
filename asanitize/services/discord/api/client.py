@@ -1,5 +1,5 @@
 from asanitize.services.discord.api import session, build_url
-from asanitize.services.discord.api.data import DirectMessageChannelList, GuildList, MessageList, User
+from asanitize.services.discord.api.data import DirectMessageChannelList, GuildList, User
 from asanitize.services.discord.api.exceptions import AuthenticationTokenMissingError, ConnectionError
 
 class Client(object):

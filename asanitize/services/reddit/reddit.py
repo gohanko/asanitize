@@ -1,5 +1,4 @@
 import praw
-from praw.exceptions import RedditAPIException
 from prawcore import ResponseException
 from asanitize.common import random_word
 
