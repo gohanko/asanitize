@@ -1,6 +1,6 @@
-from . import session, build_url
-from .data import DirectMessageChannelList, GuildList, MessageList, User
-from .exceptions import AuthenticationTokenMissingError, ConnectionError
+from asanitize.services.discord.api import session, build_url
+from asanitize.services.discord.api.data import DirectMessageChannelList, GuildList, MessageList, User
+from asanitize.services.discord.api.exceptions import AuthenticationTokenMissingError, ConnectionError
 
 class Client(object):
     def __init__(self, token: str) -> None:

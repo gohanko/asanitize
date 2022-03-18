@@ -23,14 +23,15 @@ class CommandLineInterface:
         parser.add_argument('token', help='Must be set. It is used to access a particular account to perform sanitization tasks.')
         parser.add_argument('channel', help='Must be set. Values are either the channel id that you want to sanitize or the string \'all\' to clean everything.')
         parser.add_argument('--file', help='Set if you have a config file containing the authentication details. Please have a look at example.env.yml for example on how to create one.')
+        parser.add_argument('--moresecure', help='If this is true, it will edit the messages before deleting. True by default.', action=argparse.BooleanOptionalAction)
 
         parsed_arguments = parser.parse_args(args)
         if parsed_arguments.file is not None:
             config = load_config_from_file(parsed_arguments.file, 'discord')
         else:
-            config = { 'token': parsed_arguments.token, 'channel': parsed_arguments.channel }
+            config = { 'token': parsed_arguments.token, 'channel': parsed_arguments.channel, 'moresecure': parsed_arguments.moresecure }
 
-        sanitize(config.get('token'), config.get('channel'))
+        sanitize(config.get('token'), config.get('channel'), None, config.get('moresecure'))
       
     def reddit(self, args):
         parser = argparse.ArgumentParser(prog='asanitize.py reddit', description='Command to sanitize a reddit account.')

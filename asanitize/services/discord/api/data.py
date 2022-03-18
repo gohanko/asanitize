@@ -1,7 +1,8 @@
 import time
 import pprint
 from dataclasses import dataclass, field
-from . import session, build_url
+from asanitize.services.discord.api import session, build_url
+from asanitize.common import random_word
 
 @dataclass
 class User:
@@ -109,6 +110,12 @@ class Message:
             time.sleep(sleep_interval)
             self.delete()
 
+    def sanitize(self, is_more_secure):
+        if is_more_secure:
+            self.edit(random_word())
+
+        self.delete()
+
 @dataclass
 class MessageList:
     messages: list[Message] = field(default_factory=list)
@@ -137,10 +144,10 @@ class MessageList:
                 hit=message[0].get('hit'),
             ))
 
-    def delete_all(self):
+    def sanitize_all(self, is_more_secure: bool):
         for index, message in enumerate(self.messages):
-            print('Deleting ({}/{})'.format(index + 1, len(self.messages)))
-            message.delete()
+            print('Sanitizing ({}/{})'.format(index + 1, len(self.messages)))
+            message.sanitize(is_more_secure)
 
 @dataclass
 class Guild:
@@ -304,9 +311,9 @@ class Guild:
         response = session.get(search_url).json()
         return MessageList(response)
 
-    def sanitize(self, author_id: str) -> None:
+    def sanitize(self, author_id: str, is_more_secure: bool) -> None:
         messages = self.search(author_id, 0)
-        messages.delete_all()
+        messages.sanitize_all(is_more_secure)
 
 @dataclass
 class GuildList:
@@ -336,13 +343,13 @@ class GuildList:
                 print('Sanitizing {}'.format(guild.name))
                 guild.sanitize(author_id)
 
-    def sanitize_all(self, author_id: str) -> None:
+    def sanitize_all(self, author_id: str, is_more_secure: bool) -> None:
         for guild in self.guilds:
-            print('sanitizing {}'.format(guild.name))
-            guild.sanitize(author_id)
+            print('Sanitizing {}'.format(guild.name))
+            guild.sanitize(author_id, is_more_secure)
 
 @dataclass
-class Channel:
+class DirectMessageChannel:
     id: str = ''
     type: int = 0
     last_message_id: str = ''
@@ -362,9 +369,9 @@ class Channel:
         response = session.get(search_url).json()
         return MessageList(response)
 
-    def sanitize(self, author_id: str) -> None:
+    def sanitize(self, author_id: str, is_more_secure: bool) -> None:
         messages = self.search(author_id, 0)
-        messages.delete_all()
+        messages.sanitize_all(is_more_secure)
 
 @dataclass
 class DirectMessageChannelList:
@@ -383,7 +390,7 @@ class DirectMessageChannelList:
                     public_flags=recipient.get('public_flags'),
                 ))
             
-            direct_message_channel = Channel(
+            direct_message_channel = DirectMessageChannel(
                 id=direct_message.get('id'),
                 type=direct_message.get('type'),
                 last_message_id=direct_message.get('last_message_id'),
@@ -399,11 +406,11 @@ class DirectMessageChannelList:
         
         return False
 
-    def sanitize(self, author_id: str, channel_id: str) -> None:
+    def sanitize(self, author_id: str, channel_id: str, is_more_secure: bool) -> None:
         for direct_message_channel in self.direct_message_channels:
             if direct_message_channel.id == channel_id:
-                direct_message_channel.sanitize(author_id)
+                direct_message_channel.sanitize(author_id, is_more_secure)
 
-    def sanitize_all(self, author_id: str) -> None:
+    def sanitize_all(self, author_id: str, is_more_secure: bool) -> None:
         for direct_message_channel in self.direct_message_channels:
-            direct_message_channel.sanitize(author_id)
+            direct_message_channel.sanitize(author_id, is_more_secure)
