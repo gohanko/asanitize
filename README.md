@@ -29,7 +29,7 @@ reddit:
     username: 'invalid_username'
     password: 'invalid_password'
     two_factor: 'invalid_two_factor'
-    moresecure: True|False
+    fastmode: True|False
 ```
 
 ## LICENSE
