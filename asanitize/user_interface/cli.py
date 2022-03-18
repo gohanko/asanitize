@@ -1,11 +1,11 @@
 import sys
 import argparse
 from asanitize.common import load_config_from_file
-from asanitize.services.discord import DiscordRoutine
-from asanitize.services.reddit import RedditRoutine
+from asanitize.services.discord.sanitize import sanitize
+from asanitize.services.reddit.reddit import RedditRoutine
 
 # https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
-class Command:
+class CommandLineInterface:
     def __init__(self):
         parser = argparse.ArgumentParser(prog='asanitize.py', description='Software to sanitize your online accounts.')
         parser.add_argument('service', help='Select the service to be sanitize. Currently supports \'discord\' and \'reddit\'.')
@@ -30,12 +30,8 @@ class Command:
         else:
             config = { 'token': parsed_arguments.token, 'channel': parsed_arguments.channel }
 
-        routine = DiscordRoutine(config.get('token'))
-        if config.get('channel') == 'all':
-            routine.sanitize_account()
-        else:
-            routine.sanitize_channel(config.get('channel'))
-
+        sanitize(config.get('token'), config.get('channel'))
+      
     def reddit(self, args):
         parser = argparse.ArgumentParser(prog='asanitize.py reddit', description='Command to sanitize a reddit account.')
         parser.add_argument('client_id', help='Must be set. Client ID used to authenticate.')

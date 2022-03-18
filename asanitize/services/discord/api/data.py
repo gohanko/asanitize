@@ -1,116 +1,196 @@
 import time
-from dataclasses import dataclass
+import pprint
+from dataclasses import dataclass, field
 from . import session, build_url
 
 @dataclass
 class User:
-    id: str
-    username: str
-    avatar: str
-    discriminator: str
-    public_flags: int
-    flags: int
-    banner: str
-    banner_color: str
-    accent_color: str
-    bio: str
-    locale: str
-    nsfw_enabled: bool
-    mfa_enabled: bool
-    email: str
-    verified: bool
-    phone: str
+    id: str = ''
+    username: str = ''
+    avatar: str = ''
+    discriminator: str = ''
+    public_flags: int = 0
+    flags: int = 0
+    banner: str = ''
+    banner_color: str = ''
+    accent_color: str = ''
+    bio: str = ''
+    locale: str = ''
+    nsfw_enabled: bool = False
+    mfa_enabled: bool = False
+    email: str = ''
+    verified: bool = False
+    phone: str = ''
 
 @dataclass
 class RoleTag:
-    bot_id: str
+    bot_id: str = ''
 
 @dataclass
 class Role:
-    id: str
-    name: str
-    permissions: int
-    position: int
-    color: int
-    hoist: bool
-    managed: bool
-    mentionable: bool
-    icon: str
-    unicode_emoji: str
-    tags: list[RoleTag]
-    permissions_new: str
+    id: str = ''
+    name: str = ''
+    permissions: int = 0
+    position: int = 0
+    color: int = 0
+    hoist: bool = False
+    managed: bool = False
+    mentionable: bool = False
+    icon: str = ''
+    unicode_emoji: str = ''
+    tags: list[RoleTag] = field(default_factory=list)
+    permissions_new: str = ''
 
 @dataclass
 class Emoji:
-    name: str
-    roles: list[Role]
-    id: str
-    require_colons: bool
-    managed: bool
-    animated: bool
-    available: bool
+    name: str = ''
+    roles: list[Role] = field(default_factory=list)
+    id: str = ''
+    require_colons: bool = False
+    managed: bool = False
+    animated: bool = False
+    available: bool = False
 
 @dataclass
 class Sticker:
-    id: str
-    name: str
-    tags: str
-    type: int
-    format_type: int
-    description: str
-    asset: str
-    available: bool
-    guild_id: str
+    id: str = ''
+    name: str = ''
+    tags: str = ''
+    type: int = 0
+    format_type: int = 0
+    description: str = ''
+    asset: str = ''
+    available: bool = False
+    guild_id: str = ''
+
+@dataclass
+class Message:
+    id: str = ''
+    type: int = 0
+    content: str = ''
+    channel_id: str = ''
+    author: User = None
+    attachments: list = field(default_factory=list)
+    embeds: list = field(default_factory=list)
+    mentions: list = field(default_factory=list)
+    mention_roles: list = field(default_factory=list)
+    pinned: bool = False
+    mention_everyone: bool = False
+    tts: bool = False
+    timestamp: str = '' # todo: maybe change to actual date time format?
+    edited_timestamp: str = ''
+    flags: int = 0
+    components: list = field(default_factory=list)
+    hit: bool = False
+
+    def edit(self, new_content):
+        edit_message_url = build_url('channels', self.channel_id, 'messages', self.id)
+        response = session.patch(
+            edit_message_url, 
+            headers={'Content-Type': 'application/json'}, 
+            json={'content': new_content}
+        )
+
+        if response.status_code == 200:
+            content = new_content
+
+        if response.status_code == 429:
+            sleep_interval = int(response.headers.get('retry-after')) / 1000
+            time.sleep(sleep_interval)
+            self.edit(new_content)
+
+    # Can only delete it from discord servers but not itself from out list.
+    def delete(self):
+        delete_message_url = build_url('channels', self.channel_id, 'messages', self.id)
+        response = session.delete(delete_message_url)
+
+        if response.status_code == 429:
+            sleep_interval = int(response.headers.get('retry-after')) / 1000
+            time.sleep(sleep_interval)
+            self.delete()
+
+@dataclass
+class MessageList:
+    messages: list[Message] = field(default_factory=list)
+
+    def __init__(self, message_list):
+        self.messages = []
+
+        for message in message_list.get('messages'):
+            self.messages.append(Message(
+                id=message[0].get('id'),
+                type=message[0].get('type'),
+                content=message[0].get('content'),
+                channel_id=message[0].get('channel_id'),
+                author=message[0].get('author'),
+                attachments=message[0].get('attachments'),
+                embeds=message[0].get('embeds'),
+                mentions=message[0].get('mentions'),
+                mention_roles=message[0].get('mention_roles'),
+                pinned=message[0].get('pinned'),
+                mention_everyone=message[0].get('mention_everyone'),
+                tts=message[0].get('tts'),
+                timestamp=message[0].get('timestamp'),
+                edited_timestamp=message[0].get('edited_timestamp'),
+                flags=message[0].get('flags'),
+                components=message[0].get('components'),
+                hit=message[0].get('hit'),
+            ))
+
+    def delete_all(self):
+        for index, message in enumerate(self.messages):
+            print('Deleting ({}/{})'.format(index + 1, len(self.messages)))
+            message.delete()
 
 @dataclass
 class Guild:
-    id: str
-    name: str
-    icon: str
-    description: str
-    splash: str
-    discovery_splash: str
-    features: list[str]
-    emojis: list[Emoji]
-    stickers: list[Sticker]
-    banner: bool
-    owner: bool
-    owner_id: str
-    application_id: str
-    region: str
-    afk_channel_id: str
-    afk_timeout: int
-    system_channel_id: str
-    widget_enabled: bool
-    widget_channel_id: null
-    verification_level: int
-    roles: list[Role]
-    default_message_notifications: int
-    mfa_level: int
-    explicit_content_filters: int
-    max_presences: int
-    max_members: int
-    max_video_channel_users: int
-    vanity_url_code: str
-    premium_tier: int
-    premium_subscription_count: int
-    system_channel_flags: int
-    preferred_locale: str
-    rules_channel_id: str
-    public_updates_channel_id: str
-    hub_type: str
-    premium_progress_bar_enabled: bool
-    nsfw: bool
-    nsfw_level: int
-    embed_enabled: bool
-    embed_channel_id: str
+    id: str = ''
+    name: str = ''
+    icon: str = ''
+    description: str = ''
+    splash: str = ''
+    discovery_splash: str = ''
+    features: list[str] = field(default_factory=list)
+    emojis: list[Emoji] = field(default_factory=list)
+    stickers: list[Sticker] = field(default_factory=list)
+    banner: bool = False
+    owner: bool = False
+    owner_id: str = ''
+    application_id: str = ''
+    region: str = ''
+    afk_channel_id: str = ''
+    afk_timeout: int = 0
+    system_channel_id: str = ''
+    widget_enabled: bool = False
+    widget_channel_id: str = ''
+    verification_level: int = 0
+    roles: list[Role] = field(default_factory=list)
+    default_message_notifications: int = 0
+    mfa_level: int = 0
+    explicit_content_filters: int = 0
+    max_presences: int = 0
+    max_members: int = 0
+    max_video_channel_users: int = 0
+    vanity_url_code: str = ''
+    premium_tier: int = 0
+    premium_subscription_count: int = 0
+    system_channel_flags: int = 0
+    preferred_locale: str = ''
+    rules_channel_id: str = ''
+    public_updates_channel_id: str = ''
+    hub_type: str = ''
+    premium_progress_bar_enabled: bool = False
+    nsfw: bool = False
+    nsfw_level: int = 0
+    embed_enabled: bool = False
+    embed_channel_id: str = ''
 
     def info(self):
         guild_info_url = build_url('channels', self.id)
         response = session.get(guild_info_url).json()
 
         emojis = []
-        for emoji in response.get('emojis')
+        for emoji in response.get('emojis'):
             emoji_roles = []
             for emoji_role in emoji.get('roles'):
                 emoji_role.append(Role(
@@ -138,7 +218,7 @@ class Guild:
             ))
 
         stickers = []
-        for sticker in response.get('stickers')
+        for sticker in response.get('stickers'):
             stickers.append(Sticker(
                 id=sticker.get('id'),
                 name=sticker.get('name'),
@@ -215,42 +295,7 @@ class Guild:
             'guilds', 
             self.id, 
             'messages', 
-            'search?author_id{}&include_nsfw=true'.format(author_id)
-        )
-
-        if offset:
-            search_url = '{}&offset={}'.format(search_url, offset)
-
-        response = session.get(search_url).json()
-        return MessageList(response)
-
-@dataclass
-class GuildList:
-    guilds: list
-
-    def __init__(self, guild_list: list) -> None:
-        for guild in guild_list:
-            self.guilds.append(Guild(
-                id=guild.get('id'),
-                name=guild.get('name'),
-                icon=guild.get('icon'),
-                owner=guild.get('owner'),
-                features=guild.get('features'),
-            ))
-
-@dataclass
-class Channel:
-    id: str
-    type: int
-    last_message_id: str
-    recipients: list[User]
-
-    def search(self, author_id: str, offset: str) -> MessageList:
-        search_url = build_url(
-            'channels', 
-            self.id, 
-            'messages', 
-            'search?author_id{}&include_nsfw=true'.format(author_id)
+            'search?author_id={}&include_nsfw=true'.format(author_id)
         )
 
         if offset:
@@ -261,14 +306,72 @@ class Channel:
 
     def sanitize(self, author_id: str) -> None:
         messages = self.search(author_id, 0)
+        messages.delete_all()
 
+@dataclass
+class GuildList:
+    guilds: list[Guild] = field(default_factory=list)
 
+    def __init__(self, guild_list: list) -> None:
+        self.guilds = []
+        for guild in guild_list:
+            self.guilds.append(Guild(
+                id=guild.get('id'),
+                name=guild.get('name'),
+                icon=guild.get('icon'),
+                owner=guild.get('owner'),
+                features=guild.get('features'),
+            ))
+
+    def is_exist(self, channel_id):
+        for guild in self.guilds:
+            if guild.id == channel_id:
+                return True
+        
+        return False
+
+    def sanitize(self, author_id: str, channel_id: str) -> None:
+        for guild in self.guilds:
+            if channel_id == guild.id:
+                print('Sanitizing {}'.format(guild.name))
+                guild.sanitize(author_id)
+
+    def sanitize_all(self, author_id: str) -> None:
+        for guild in self.guilds:
+            print('sanitizing {}'.format(guild.name))
+            guild.sanitize(author_id)
+
+@dataclass
+class Channel:
+    id: str = ''
+    type: int = 0
+    last_message_id: str = ''
+    recipients: list[User] = field(default_factory=list)
+
+    def search(self, author_id: str, offset: str) -> MessageList:
+        search_url = build_url(
+            'channels', 
+            self.id, 
+            'messages', 
+            'search?author_id={}&include_nsfw=true'.format(author_id)
+        )
+
+        if offset:
+            search_url = '{}&offset={}'.format(search_url, offset)
+
+        response = session.get(search_url).json()
+        return MessageList(response)
+
+    def sanitize(self, author_id: str) -> None:
+        messages = self.search(author_id, 0)
+        messages.delete_all()
 
 @dataclass
 class DirectMessageChannelList:
-    direct_message_channels: list
+    direct_message_channels: list = field(default_factory=list)
 
     def __init__(self, direct_message_list: list) -> None:
+        self.direct_message_channels = []
         for direct_message in direct_message_list:
             recipients = []
             for recipient in direct_message.get('recipients'):
@@ -289,78 +392,18 @@ class DirectMessageChannelList:
 
             self.direct_message_channels.append(direct_message_channel)
 
-@dataclass
-class Message:
-    id: str
-    type: int
-    content: str
-    channel_id: str
-    author: User
-    attachments: list
-    embeds: list
-    mentions: list
-    mention_roles: list
-    pinned: bool
-    mention_everyone: bool
-    tts: bool
-    timestamp: str # todo: maybe change to actual date time format?
-    edited_timestamp: str
-    flags: int
-    components: list
-    hit: bool
+    def is_exist(self, channel_id):
+        for direct_message_channel in self.direct_message_channels:
+            if direct_message_channel.id == channel_id:
+                return True
+        
+        return False
 
-    def edit(self, new_content):
-        edit_message_url = build_url('channels', self.channel_id, 'messages', self.id)
-        response = session.patch(
-            edit_message_url, 
-            headers={'Content-Type': 'application/json'}, 
-            json={'content': new_content}
-        )
+    def sanitize(self, author_id: str, channel_id: str) -> None:
+        for direct_message_channel in self.direct_message_channels:
+            if direct_message_channel.id == channel_id:
+                direct_message_channel.sanitize(author_id)
 
-        if response.status_code == 200:
-            content = new_content
-
-        if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after')) / 1000
-            time.sleep(sleep_interval)
-            self.edit(new_content)
-
-    # Can only delete it from discord servers but not itself from out list.
-    def delete(self):
-        delete_message_url = build_url('channels', channel_id, 'messages', self.id)
-        response = session.delete(delete_message_url)
-
-        if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after')) / 1000
-            time.sleep(sleep_interval)
-            delete()
-
-class MessageList:
-    messages: list
-
-    def __init__(self, message_list):
-        for message in message_list.get('messages'):
-            messages.append(Message(
-                id=message.get('id'),
-                type=message.get('type'),
-                content=message.get('content'),
-                channel_id=message.get('channel_id'),
-                author=message.get('author'),
-                attachments=message.get('attachments'),
-                embeds=message.get('embeds'),
-                mentions=message.get('mentions'),
-                mention_roles=message.get('mention_roles'),
-                pinned=message.get('pinned'),
-                mention_everyone=message.get('mention_everyone'),
-                tts=message.get('tts'),
-                timestamp=message.get('timestamp'),
-                edited_timestamp=message.get('edited_timestamp'),
-                flags=message.get('flags'),
-                components=message.get('components'),
-                hit=message.get('hit'),
-            ))
-
-    def delete_all(self):
-        for message in messages:
-            message.delete()
-
+    def sanitize_all(self, author_id: str) -> None:
+        for direct_message_channel in self.direct_message_channels:
+            direct_message_channel.sanitize(author_id)

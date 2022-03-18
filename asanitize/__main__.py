@@ -1,4 +1,4 @@
-from asanitize.command import Command
+from asanitize.user_interface.cli import CommandLineInterface
 
 if __name__ == '__main__':
-    Command()
+    CommandLineInterface()
