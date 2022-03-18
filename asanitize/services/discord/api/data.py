@@ -93,7 +93,7 @@ class Message:
         )
 
         if response.status_code == 200:
-            content = new_content
+            self.content = new_content
 
         if response.status_code == 429:
             sleep_interval = int(response.headers.get('retry-after')) / 1000
