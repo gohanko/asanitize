@@ -5,3 +5,4 @@ dist/
 env.yml
 *.egg-info/
 build/
+discord_config.json
