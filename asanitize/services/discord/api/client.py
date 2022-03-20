@@ -3,6 +3,9 @@ from asanitize.services.discord.api.data import DirectMessageChannelList, GuildL
 from asanitize.services.discord.api.exceptions import AuthenticationTokenMissingError, ConnectionError
 
 class Client(object):
+    token = None
+    current_user_info = None
+
     def __init__(self, token: str) -> None:
         self.token = token
         if not token:
@@ -39,6 +42,7 @@ class Client(object):
             phone=response.get('phone'),
         )
 
+        self.current_user_info = current_user
         return current_user
 
     def get_direct_message_channels(self) -> DirectMessageChannelList:

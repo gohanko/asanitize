@@ -11,15 +11,6 @@ class MainFrame(wx.Frame):
     guilds = []
     direct_message_channels = []
 
-    def _get_channel_to_sanitize(self):
-        channel_to_sanitize = []
-        checked_items = self.m_checkList1.GetCheckedStrings()
-        for checked_item in checked_items:
-            id = checked_item[checked_item.find('(') + 1: checked_item.find(')')]
-            channel_to_sanitize.append(id)
-
-        return channel_to_sanitize
-
     def __init__(self, parent):
         self.config = self.discord_config.get_config('./discord_config.json')
 
@@ -31,65 +22,80 @@ class MainFrame(wx.Frame):
         fgSizer1.SetFlexibleDirection(wx.BOTH)
         fgSizer1.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.m_textCtrl2 = wx.TextCtrl(self, wx.ID_ANY, self.config.get('token'), wx.DefaultPosition, wx.Size( 350, -1 ), 0)
-        fgSizer1.Add(self.m_textCtrl2, 0, wx.ALL, 5)
+        self.authentication_token_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, self.config.get('token'), wx.DefaultPosition, wx.Size( 350, -1 ), 0)
+        self.authentication_token_text_ctrl.SetHint('Set Discord authentication token here...')
+        fgSizer1.Add(self.authentication_token_text_ctrl, 0, wx.ALL, 5)
 
-        self.m_button2 = wx.Button(self, wx.ID_ANY, u"Authenticate", wx.DefaultPosition, wx.Size(120, -1), 0)
-        self.m_button2.Bind(wx.EVT_BUTTON, self._onButton2Clicked)
-        fgSizer1.Add(self.m_button2, 0, wx.ALL, 5)
+        self.authenticate_button = wx.Button(self, wx.ID_ANY, u"Authenticate", wx.DefaultPosition, wx.Size(120, -1), 0)
+        self.authenticate_button.Bind(wx.EVT_BUTTON, self._on_authenticate_button_clicked)
+        fgSizer1.Add(self.authenticate_button, 0, wx.ALL, 5)
 
-        self.m_checkList1Choices = []
-        self.m_checkList1 = wx.CheckListBox(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(350, 150), self.m_checkList1Choices, 0)
-        self.m_checkList1.Bind(wx.EVT_CHECKLISTBOX, self._onCheckListCheckedUnchecked)
-        
-        
-        fgSizer1.Add(self.m_checkList1, 0, wx.ALL, 5)
+        self.server_list = []
+        self.server_check_list = wx.CheckListBox(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(350, 150), self.server_list, 0)
+        self.server_check_list.Bind(wx.EVT_CHECKLISTBOX, self._on_server_check_list_check_uncheck)
+        fgSizer1.Add(self.server_check_list, 0, wx.ALL, 5)
 
-        self.m_dataViewListCtrl1 = wx.dataview.DataViewListCtrl(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(120, 150), 0)
-        fgSizer1.Add(self.m_dataViewListCtrl1, 0, wx.ALL, 5)
+        self.current_user_view_list = wx.dataview.DataViewListCtrl(self, wx.ID_ANY, wx.DefaultPosition, wx.Size(120, 150), 0)
+        fgSizer1.Add(self.current_user_view_list, 0, wx.ALL, 5)
 
-        self.m_gauge1 = wx.Gauge( self, wx.ID_ANY, 100, wx.DefaultPosition, wx.Size(350, 23), wx.GA_HORIZONTAL )
-        self.m_gauge1.SetValue(0) 
-        fgSizer1.Add(self.m_gauge1, 0, wx.ALL, 5)
+        self.progress_gauge = wx.Gauge( self, wx.ID_ANY, 100, wx.DefaultPosition, wx.Size(350, 23), wx.GA_HORIZONTAL )
+        self.progress_gauge.SetValue(0) 
+        fgSizer1.Add(self.progress_gauge, 0, wx.ALL, 5)
 
-        self.m_button3 = wx.Button(self, wx.ID_ANY, u"Sanitize", wx.DefaultPosition, wx.Size(120, -1), 0)
-        self.m_button3.Bind(wx.EVT_BUTTON, self._onButton3Clicked)
-        fgSizer1.Add(self.m_button3, 0, wx.ALL, 5)
+        self.sanitize_button = wx.Button(self, wx.ID_ANY, u"Sanitize", wx.DefaultPosition, wx.Size(120, -1), 0)
+        self.sanitize_button.Bind(wx.EVT_BUTTON, self._on_sanitize_button_clicked)
+        fgSizer1.Add(self.sanitize_button, 0, wx.ALL, 5)
 
         self.SetSizer(fgSizer1)
         self.Layout()
 
         self.Centre(wx.BOTH)
- 
-    def _onButton2Clicked(self, event):
-        token = self.m_textCtrl2.GetValue()
+        
+    def _get_channel_to_sanitize(self):
+        channel_to_sanitize = []
+        checked_items = self.server_check_list.GetCheckedStrings()
+        for checked_item in checked_items:
+            id = checked_item[checked_item.find('(') + 1: checked_item.find(')')]
+            channel_to_sanitize.append(id)
+
+        return channel_to_sanitize
+    def _on_authenticate_button_clicked(self, event):
+        token = self.authentication_token_text_ctrl.GetValue()
+        self.progress_gauge.SetValue(25)
         self.client = Client(token)
+        self.client.get_my_info()
 
         self.guilds = self.client.get_guilds()
-        for guild in self.guilds.channels:
-            self.m_checkList1.Append('({}) {}'.format(guild.id, guild.name))
+        for index, guild in enumerate(self.guilds.channels):
+            self.progress_gauge.SetValue((index / len(self.guilds.channels) * 50))
+            self.server_check_list.Append('({}) {}'.format(guild.id, guild.name))
 
         self.direct_message_channels = self.client.get_direct_message_channels()
-        for direct_message_channel in self.direct_message_channels.channels:
+        for index, direct_message_channel in enumerate(self.direct_message_channels.channels):
+            self.progress_gauge.SetValue((index / len(self.direct_message_channels.channels) * 75))
             recipients = ', '.join(['{}#{}'.format(recipient.username, recipient.discriminator) for recipient in direct_message_channel.recipients])
-            self.m_checkList1.Append('({}) Direct Message with {}'.format(direct_message_channel.id, recipients))
+            self.server_check_list.Append('({}) Direct Message with {}'.format(direct_message_channel.id, recipients))
 
         index_to_check = []
-        for index, checked_string in enumerate(self.m_checkList1.GetStrings()):
+        check_list_items = self.server_check_list.GetStrings()
+        for index, checked_string in enumerate(check_list_items):
             id = checked_string[checked_string.find('(') + 1: checked_string.find(')')]
 
             for channel in self.config.get('channel'):
                 if channel == id:
                     index_to_check.append(index)
+
+            self.progress_gauge.SetValue((index / len(check_list_items) * 120))
         
-        self.m_checkList1.SetChecked(index_to_check)
-                    
-        self.discord_config.set_config('./discord_config.json', self.m_textCtrl2.GetValue(), self._get_channel_to_sanitize())
+        self.server_check_list.SetCheckedItems(index_to_check)
+        self.discord_config.set_config('./discord_config.json', self.authentication_token_text_ctrl.GetValue(), self._get_channel_to_sanitize())
 
-    def _onButton3Clicked(self, event):
-        author_id = self.client.get_my_info().id
+    def _on_sanitize_button_clicked(self, event):
+        self.progress_gauge.SetValue(0)
+        author_id = self.client.current_user_info.id
 
-        for channel_id in self._get_channel_to_sanitize():
+        channels_to_sanitize = self._get_channel_to_sanitize()
+        for index, channel_id in enumerate(channels_to_sanitize):
             for guild in self.guilds.channels:
                 if guild.id == channel_id:
                     guild.sanitize(author_id, False)
@@ -97,13 +103,13 @@ class MainFrame(wx.Frame):
             for direct_message_channel in self.direct_message_channels.channels:
                 if direct_message_channel.id == id:
                     direct_message_channel.sanitize(author_id, False)
+    
+            self.progress_gauge.SetValue((index / len(channels_to_sanitize) * 100))
 
-    def _onCheckListCheckedUnchecked(self, event):
-        self.discord_config.set_config('./discord_config.json', self.m_textCtrl2.GetValue(), self._get_channel_to_sanitize())
+        self.progress_gauge.SetValue(100)
 
-    def __del__(self):
-        pass
-	
+    def _on_server_check_list_check_uncheck(self, event):
+        self.discord_config.set_config('./discord_config.json', self.authentication_token_text_ctrl.GetValue(), self._get_channel_to_sanitize())
 
 def start_app():
     app = wx.App()
