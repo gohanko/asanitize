@@ -1,4 +1,4 @@
-from asanitize.data_structures.linked_list import Node
+from asanitize.data_structure.linked_list import Node
 
 class Stack:
     top = None

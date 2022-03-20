@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass, field
-from asanitize.data_structures.linked_list import LinkedList
+from asanitize.data_structure.linked_list import LinkedList
 from asanitize.services.discord.api import session, build_url
 from asanitize.common import random_word
 

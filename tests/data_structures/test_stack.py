@@ -1,5 +1,5 @@
 import unittest
-from asanitize.data_structures.stack import Stack
+from asanitize.data_structure.stack import Stack
 
 class TestStack(unittest.TestCase):
 

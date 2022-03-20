@@ -1,5 +1,5 @@
 import unittest
-from asanitize.data_structures.linked_list import LinkedList
+from asanitize.data_structure.linked_list import LinkedList
 
 class TestLinkedList(unittest.TestCase):
 
