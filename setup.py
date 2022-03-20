@@ -17,6 +17,7 @@ setuptools.setup(
         'praw==7.1.0',
         'PyYAML==5.4',
         'requests==2.25.1',
+        'wxPython==4.1.1'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
