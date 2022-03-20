@@ -1,3 +1,4 @@
+import os
 import json
 from dataclasses import dataclass, field
 
@@ -22,6 +23,9 @@ class DiscordConfig(object):
         self.save_config(filename)
 
     def load_config(self, filename):
+        if not os.path.exists(filename):
+            open(filename, 'w').close()
+        
         file = open(filename, 'r')
         data = json.load(file)
 
