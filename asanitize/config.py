@@ -24,7 +24,9 @@ class DiscordConfig(object):
 
     def load_config(self, filename):
         if not os.path.exists(filename):
-            open(filename, 'w').close()
+            new_file = open(filename, 'w')
+            json.dump({ 'token': self.token, 'channel': self.channel }, new_file, indent=4)
+            new_file.close()
         
         file = open(filename, 'r')
         data = json.load(file)
