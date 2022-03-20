@@ -1,5 +1,6 @@
 import time
 from dataclasses import dataclass, field
+from asanitize.data_structures.linked_list import LinkedList
 from asanitize.services.discord.api import session, build_url
 from asanitize.common import random_word
 
@@ -117,10 +118,10 @@ class Message:
 
 @dataclass
 class MessageList:
-    messages: list[Message] = field(default_factory=list)
+    messages: LinkedList
 
     def __init__(self, message_list: dict) -> None:
-        self.messages = []
+        self.messages = LinkedList()
 
         for message in message_list.get('messages'):
             self.messages.append(Message(
@@ -144,9 +145,10 @@ class MessageList:
             ))
 
     def sanitize_all(self, is_fast_mode: bool) -> None:
-        for index, message in enumerate(self.messages):
-            print('    Sanitizing ({}/{})'.format(index + 1, len(self.messages)))
-            message.sanitize(is_fast_mode)
+        for i in range(self.messages.count):
+            print('    Sanitizing ({}/{})'.format(i + 1, self.messages.count))
+            message = self.messages.find(i)
+            message.item.sanitize(is_fast_mode)
 
 @dataclass
 class BaseChannel:
@@ -162,7 +164,7 @@ class BaseChannel:
 
     def sanitize(self, author_id: str, is_fast_mode: bool) -> None:
         message_list = self.search(author_id, 0)
-        if len(message_list.messages) < 1:
+        if message_list.messages.count < 1:
             print('    No messages found! Skipping...')
 
         message_list.sanitize_all(is_fast_mode)
