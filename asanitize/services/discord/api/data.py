@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from asanitize.data_structure.linked_list import LinkedList
 from asanitize.services.discord.api import session, build_url
 from asanitize.common import random_word
+from asanitize.database.sqlite import MessageDB
 
 @dataclass
 class User:
@@ -144,11 +145,14 @@ class MessageList:
                 hit=message[0].get('hit'),
             ))
 
+            self.message_db = MessageDB()
+
     def sanitize_all(self, is_fast_mode: bool) -> None:
         for i in range(self.messages.count):
             print('    Sanitizing ({}/{})'.format(i + 1, self.messages.count))
             message = self.messages.find(i)
             message.item.sanitize(is_fast_mode)
+            self.message_db.insert_row(message.item.id, message.item.content)
 
 @dataclass
 class BaseChannel:

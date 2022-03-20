@@ -6,3 +6,4 @@ env.yml
 *.egg-info/
 build/
 discord_config.json
+discord_deleted_messages.sqlite3
