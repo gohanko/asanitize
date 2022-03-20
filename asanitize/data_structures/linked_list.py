@@ -1,6 +1,3 @@
-from email import header
-
-
 class Node:
     item = None
     prev = None
