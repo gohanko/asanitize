@@ -170,7 +170,7 @@ class BaseChannel:
             time.sleep(sleep_interval)
         
         retrieved_messages = previous_retrieved_messages
-        if len(response.json().get('messages')) != 0:
+        if response.json().get('messages') != None:
             retrieved_messages = retrieved_messages + response.json().get('messages')
 
         if response.json().get('total_results') == len(retrieved_messages):
