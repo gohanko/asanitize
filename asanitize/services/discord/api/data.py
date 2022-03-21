@@ -121,10 +121,10 @@ class Message:
 class MessageList:
     messages: LinkedList
 
-    def __init__(self, message_list: dict) -> None:
+    def __init__(self, message_list: list) -> None:
         self.messages = LinkedList()
 
-        for message in message_list.get('messages'):
+        for message in message_list:
             self.messages.append(Message(
                 id=message[0].get('id'),
                 type=message[0].get('type'),
@@ -145,14 +145,14 @@ class MessageList:
                 hit=message[0].get('hit'),
             ))
 
-            self.message_db = MessageDB()
+            self.message_db = MessageDB('discord_deleted_messages.sqlite3')
 
     def sanitize_all(self, is_fast_mode: bool) -> None:
         for i in range(self.messages.count):
             print('    Sanitizing ({}/{})'.format(i + 1, self.messages.count))
             message = self.messages.find(i)
+            self.message_db.insert_row(message.item.id, message.item.content, message.item.channel_id)
             message.item.sanitize(is_fast_mode)
-            self.message_db.insert_row(message.item.id, message.item.content)
 
 @dataclass
 class BaseChannel:
@@ -161,10 +161,22 @@ class BaseChannel:
     def _get_search_url(self, author_id: str, offset: str) -> MessageList:
         pass
 
-    def search(self, author_id: str, offset: str) -> MessageList:
+    def search(self, author_id: str, offset: str, previous_retrieved_messages: list = []) -> MessageList:
         search_url = self._get_search_url(author_id, offset)
-        response = session.get(search_url).json()
-        return MessageList(response)
+        response = session.get(search_url)
+
+        if response.status_code == 429:
+            sleep_interval = int(response.headers.get('retry-after')) / 1000
+            time.sleep(sleep_interval)
+        
+        retrieved_messages = previous_retrieved_messages
+        if len(response.json().get('messages')) != 0:
+            retrieved_messages = retrieved_messages + response.json().get('messages')
+
+        if response.json().get('total_results') == len(retrieved_messages):
+            return MessageList(retrieved_messages)
+
+        return self.search(author_id, offset + 25, retrieved_messages)
 
     def sanitize(self, author_id: str, is_fast_mode: bool) -> None:
         message_list = self.search(author_id, 0)
