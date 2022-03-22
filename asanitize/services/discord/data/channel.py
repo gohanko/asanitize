@@ -6,6 +6,7 @@ from asanitize.services.discord.data.message_list import MessageList
 from asanitize.services.discord.data.message import Emoji, Sticker, Role, RoleTag
 from asanitize.services.discord.data.user import User
 
+
 @dataclass
 class BaseChannel:
     id: str = ''
@@ -36,6 +37,7 @@ class BaseChannel:
             print('    No messages found! Skipping...')
 
         message_list.sanitize_all(is_fast_mode)
+
 
 @dataclass
 class Guild(BaseChannel):
@@ -196,6 +198,7 @@ class Guild(BaseChannel):
             search_url = '{}&offset={}'.format(search_url, offset)
         
         return search_url
+
 
 @dataclass
 class DirectMessageChannel(BaseChannel):

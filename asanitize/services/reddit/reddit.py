@@ -1,6 +1,8 @@
 import praw
 from prawcore import ResponseException
+
 from asanitize.common import random_word
+
 
 class RedditRoutine:
     def __init__(self, client_id, client_secret, username, password, two_factor=None):

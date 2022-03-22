@@ -2,6 +2,7 @@ from asanitize.services.discord import session, build_url
 from asanitize.services.discord.data.channel_list import DirectMessageChannelList, GuildList, User
 from asanitize.services.discord.exceptions import AuthenticationTokenMissingError, ConnectionError
 
+
 class Client(object):
     token = None
     current_user_info = None

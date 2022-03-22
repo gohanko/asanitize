@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class MessageDB:
     def __init__(self, database_file):
         self.conn = self.create_server_connection(database_file)

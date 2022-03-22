@@ -33,11 +33,10 @@ class MessageList:
                 hit=message[0].get('hit'),
             ))
 
-            self.message_db = MessageDB('discord_deleted_messages.sqlite3')
-
     def sanitize_all(self, is_fast_mode: bool) -> None:
+        message_db = MessageDB('discord_deleted_messages.sqlite3')
         for i in range(self.messages.count):
             print('    Sanitizing ({}/{})'.format(i + 1, self.messages.count))
             message = self.messages.find(i)
-            self.message_db.insert_row(message.item.id, message.item.content, message.item.channel_id)
+            message_db.insert_row(message.item.id, message.item.content, message.item.channel_id)
             message.item.sanitize(is_fast_mode)
