@@ -5,5 +5,5 @@ dist/
 env.yml
 *.egg-info/
 build/
-discord_config.json
+asanitize.json
 discord_deleted_messages.sqlite3

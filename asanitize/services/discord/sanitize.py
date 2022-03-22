@@ -2,7 +2,7 @@ import time
 from asanitize.services.discord.client import Client
 
 
-def sanitize(token, channel_id, author_id=None, is_fast_mode=False):
+def sanitize(token, channels_to_sanitize, author_id=None, is_fast_mode=False):
     print('\n')
     start_time = time.perf_counter()
 
@@ -14,15 +14,16 @@ def sanitize(token, channel_id, author_id=None, is_fast_mode=False):
     if author_id is None:
         author_id = current_user_info.id
 
-    if channel_id == 'all':
+    if channels_to_sanitize == []:
         guild_list.sanitize_all(author_id=author_id, is_fast_mode=is_fast_mode)
         direct_message_channel_list.sanitize_all(author_id=author_id, is_fast_mode=is_fast_mode)
     else:
-        if guild_list.is_exist(channel_id):
-            guild_list.sanitize(author_id=author_id, channel_id=channel_id, is_fast_mode=is_fast_mode)
+        for channel_id in channels_to_sanitize:
+            if guild_list.is_exist(channel_id):
+                guild_list.sanitize(author_id=author_id, channel_id=channel_id, is_fast_mode=is_fast_mode)
 
-        if direct_message_channel_list.is_exist(channel_id):
-            direct_message_channel_list.sanitize(author_id=author_id, channel_id=channel_id, is_fast_mode=is_fast_mode)
+            if direct_message_channel_list.is_exist(channel_id):
+                direct_message_channel_list.sanitize(author_id=author_id, channel_id=channel_id, is_fast_mode=is_fast_mode)
 
     end_time = time.perf_counter()
 

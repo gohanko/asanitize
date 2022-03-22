@@ -3,17 +3,17 @@ import wx.xrc
 import wx.dataview
 
 from asanitize.services.discord.client import Client
-from asanitize.config import DiscordConfig
+from asanitize.config import ConfigurationManager
 
 
 class MainFrame(wx.Frame):
     client = None
-    discord_config = DiscordConfig()
+    config_manager = ConfigurationManager()
     guilds = []
     direct_message_channels = []
 
     def __init__(self, parent):
-        self.config = self.discord_config.get_config('./discord_config.json')
+        self.config = self.config_manager.get_service_config('discord')
 
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"Asanitize", pos=wx.DefaultPosition, size=wx.Size(507, 265), style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
 
@@ -23,7 +23,7 @@ class MainFrame(wx.Frame):
         fgSizer1.SetFlexibleDirection(wx.BOTH)
         fgSizer1.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
 
-        self.authentication_token_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, self.config.get('token'), wx.DefaultPosition, wx.Size( 350, -1 ), 0)
+        self.authentication_token_text_ctrl = wx.TextCtrl(self, wx.ID_ANY, self.config.token, wx.DefaultPosition, wx.Size( 350, -1 ), 0)
         self.authentication_token_text_ctrl.SetHint('Set Discord authentication token here...')
         fgSizer1.Add(self.authentication_token_text_ctrl, 0, wx.ALL, 5)
 
@@ -82,14 +82,14 @@ class MainFrame(wx.Frame):
         for index, checked_string in enumerate(check_list_items):
             id = checked_string[checked_string.find('(') + 1: checked_string.find(')')]
 
-            for channel in self.config.get('channel'):
+            for channel in self.config.channels_to_sanitize:
                 if channel == id:
                     index_to_check.append(index)
 
             self.progress_gauge.SetValue((index / len(check_list_items) * 120))
         
         self.server_check_list.SetCheckedItems(index_to_check)
-        self.discord_config.set_config('./discord_config.json', self.authentication_token_text_ctrl.GetValue(), self._get_channel_to_sanitize())
+        self.config_manager.set_service_config('discord', token=self.authentication_token_text_ctrl.GetValue(), channels_to_sanitize=self._get_channel_to_sanitize())
 
     def _on_sanitize_button_clicked(self, event):
         self.progress_gauge.SetValue(0)
@@ -110,7 +110,7 @@ class MainFrame(wx.Frame):
         self.progress_gauge.SetValue(100)
 
     def _on_server_check_list_check_uncheck(self, event):
-        self.discord_config.set_config('./discord_config.json', self.authentication_token_text_ctrl.GetValue(), self._get_channel_to_sanitize())
+        self.config_manager.set_service_config('discord', token=self.authentication_token_text_ctrl.GetValue(), channels_to_sanitize=self._get_channel_to_sanitize())
 
 
 def start_app():

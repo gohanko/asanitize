@@ -1,6 +1,7 @@
+from ast import parse
 import sys
 import argparse
-from asanitize.common import load_config_from_file
+from asanitize.config import DiscordConfiguration, RedditConfiguration, ConfigurationManager
 from asanitize.services.discord.sanitize import sanitize
 from asanitize.services.reddit.reddit import RedditRoutine
 
@@ -8,6 +9,8 @@ from asanitize.services.reddit.reddit import RedditRoutine
 # https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
 class CommandLineInterface:
     def __init__(self):
+        self.configuration_manager = ConfigurationManager()
+
         parser = argparse.ArgumentParser(
             prog='asanitize.py',
             description='Software to sanitize your online accounts.')
@@ -34,7 +37,7 @@ class CommandLineInterface:
             'channel',
             help='Required. Either a specific channel id or \'all\' to sanitize all.')
         parser.add_argument(
-            '--file',
+            '--useconfig',
             help='Optional. File containing authentication token and channel ids.')
         parser.add_argument(
             '--fastmode',
@@ -42,16 +45,19 @@ class CommandLineInterface:
             action=argparse.BooleanOptionalAction)
 
         parsed_arguments = parser.parse_args(args)
-        if parsed_arguments.file is not None:
-            config = load_config_from_file(parsed_arguments.file, 'discord')
+        if parsed_arguments.file:
+            config = self.configuration_manager.get_service_config('discord')
         else:
-            config = {'token': parsed_arguments.token, 'channel': parsed_arguments.channel, 'fastmode': parsed_arguments.fastmode}
+            config = DiscordConfiguration(
+                token=parsed_arguments.token,
+                channels_to_sanitize=[parsed_arguments.channel],
+                fastmode=parsed_arguments.fastmode)
 
         sanitize(
-            config.get('token'),
-            config.get('channel'),
+            config.token,
+            config.channels_to_sanitize,
             None,
-            config.get('fastmode'))
+            config.fastmode)
 
     def reddit(self, args):
         parser = argparse.ArgumentParser(
@@ -74,25 +80,23 @@ class CommandLineInterface:
             help='Set if you have two factor authentication on your account.')
         parser.add_argument(
             '--file',
-            help='Set if you have a config file containing the authentication details. Please have a look at example.env.yml for example on how to create one.')
+            help='Optional. File containing authentication secrets.')
 
         parsed_arguments = parser.parse_args(args)
         if parsed_arguments.file:
-            config = load_config_from_file(parsed_arguments.file, 'reddit')
+            config = self.configuration_manager.get_service_config('reddit')
         else:
-            config = {
-                'client_id': parsed_arguments.client_id,
-                'client_secret': parsed_arguments.client_secret,
-                'username': parsed_arguments.username,
-                'password': parsed_arguments.password,
-                'two_factor': parsed_arguments.two_factor
-            }
+            config = RedditConfiguration(
+                client_id=parsed_arguments.client_id,
+                client_secret=parsed_arguments.client_secret,
+                username=parsed_arguments.username,
+                password=parsed_arguments.password)
 
         routine = RedditRoutine(
-            config.get('client_id'),
-            config.get('client_secret'),
-            config.get('username'),
-            config.get('password'),
-            config.get('two_factor'),
-        )
+            config.client_id,
+            config.client_secret,
+            config.username,
+            config.password,
+            parsed_arguments.two_factor)
+
         routine.sanitize_all()
