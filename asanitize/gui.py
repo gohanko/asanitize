@@ -2,8 +2,9 @@ import wx
 import wx.xrc
 import wx.dataview
 
-from asanitize.services.discord.api.client import Client
+from asanitize.services.discord.client import Client
 from asanitize.config import DiscordConfig
+
 
 class MainFrame(wx.Frame):
     client = None
@@ -14,7 +15,7 @@ class MainFrame(wx.Frame):
     def __init__(self, parent):
         self.config = self.discord_config.get_config('./discord_config.json')
 
-        wx.Frame.__init__ (self, parent, id=wx.ID_ANY, title=u"Asanitize", pos=wx.DefaultPosition, size=wx.Size(507, 265), style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
+        wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=u"Asanitize", pos=wx.DefaultPosition, size=wx.Size(507, 265), style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
 
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 
@@ -110,6 +111,7 @@ class MainFrame(wx.Frame):
 
     def _on_server_check_list_check_uncheck(self, event):
         self.discord_config.set_config('./discord_config.json', self.authentication_token_text_ctrl.GetValue(), self._get_channel_to_sanitize())
+
 
 def start_app():
     app = wx.App()

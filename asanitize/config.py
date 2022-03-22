@@ -2,6 +2,7 @@ import os
 import json
 from dataclasses import dataclass, field
 
+
 @dataclass
 class DiscordConfig(object):
     token: str = ''
@@ -25,16 +26,19 @@ class DiscordConfig(object):
     def load_config(self, filename):
         if not os.path.exists(filename):
             new_file = open(filename, 'w')
-            json.dump({ 'token': self.token, 'channel': self.channel }, new_file, indent=4)
+            json.dump(
+                {'token': self.token, 'channel': self.channel},
+                new_file,
+                indent=4)
             new_file.close()
-        
+
         file = open(filename, 'r')
         data = json.load(file)
 
         self.token = data.get('token')
         self.channel = data.get('channel')
         file.close()
-    
+
     def get_config(self, filename):
         self.load_config(filename)
-        return { 'token': self.token, 'channel': self.channel }
+        return {'token': self.token, 'channel': self.channel}
