@@ -1,3 +1,5 @@
+import threading
+
 import wx
 import wx.xrc
 import wx.dataview
@@ -11,6 +13,7 @@ class MainFrame(wx.Frame):
     config_manager = ConfigurationManager()
     guilds = []
     direct_message_channels = []
+    _lock = threading.Lock()
 
     def __init__(self, parent):
         self.config = self.config_manager.get_service_config('discord')
@@ -60,43 +63,46 @@ class MainFrame(wx.Frame):
             channel_to_sanitize.append(id)
 
         return channel_to_sanitize
-    def _on_authenticate_button_clicked(self, event):
+
+    def _authenticate_and_fetch_servers(self):
         token = self.authentication_token_text_ctrl.GetValue()
         self.progress_gauge.SetValue(25)
-        self.client = Client(token)
-        self.client.get_my_info()
 
-        self.guilds = self.client.get_guilds()
-        for index, guild in enumerate(self.guilds.channels):
-            self.progress_gauge.SetValue((index / len(self.guilds.channels) * 50))
-            self.server_check_list.Append('({}) {}'.format(guild.id, guild.name))
+        with self._lock:
+            self.client = Client(token)
+            self.client.get_my_info()
 
-        self.direct_message_channels = self.client.get_direct_message_channels()
-        for index, direct_message_channel in enumerate(self.direct_message_channels.channels):
-            self.progress_gauge.SetValue((index / len(self.direct_message_channels.channels) * 75))
-            recipients = ', '.join(['{}#{}'.format(recipient.username, recipient.discriminator) for recipient in direct_message_channel.recipients])
-            self.server_check_list.Append('({}) Direct Message with {}'.format(direct_message_channel.id, recipients))
+            self.guilds = self.client.get_guilds()
+            for index, guild in enumerate(self.guilds.channels):
+                self.progress_gauge.SetValue((index / len(self.guilds.channels) * 50))
+                self.server_check_list.Append('({}) {}'.format(guild.id, guild.name))
 
-        index_to_check = []
-        check_list_items = self.server_check_list.GetStrings()
-        for index, checked_string in enumerate(check_list_items):
-            id = checked_string[checked_string.find('(') + 1: checked_string.find(')')]
+            self.direct_message_channels = self.client.get_direct_message_channels()
+            for index, direct_message_channel in enumerate(self.direct_message_channels.channels):
+                self.progress_gauge.SetValue((index / len(self.direct_message_channels.channels) * 75))
+                recipients = ', '.join(['{}#{}'.format(recipient.username, recipient.discriminator) for recipient in direct_message_channel.recipients])
+                self.server_check_list.Append('({}) Direct Message with {}'.format(direct_message_channel.id, recipients))
 
-            for channel in self.config.channels_to_sanitize:
-                if channel == id:
-                    index_to_check.append(index)
+            index_to_check = []
+            check_list_items = self.server_check_list.GetStrings()
+            for index, checked_string in enumerate(check_list_items):
+                id = checked_string[checked_string.find('(') + 1: checked_string.find(')')]
 
-            self.progress_gauge.SetValue((index / len(check_list_items) * 120))
+                for channel in self.config.channels_to_sanitize:
+                    if channel == id:
+                        index_to_check.append(index)
+
+                self.progress_gauge.SetValue((index / len(check_list_items) * 120))
         
-        self.server_check_list.SetCheckedItems(index_to_check)
-        self.config_manager.set_service_config('discord', token=self.authentication_token_text_ctrl.GetValue(), channels_to_sanitize=self._get_channel_to_sanitize())
+            self.server_check_list.SetCheckedItems(index_to_check)
+            self.config_manager.set_service_config('discord', token=self.authentication_token_text_ctrl.GetValue(), channels_to_sanitize=self._get_channel_to_sanitize())
 
-    def _on_sanitize_button_clicked(self, event):
-        self.progress_gauge.SetValue(0)
-        author_id = self.client.current_user_info.id
+    def _on_authenticate_button_clicked(self, event):
+        authentication_thread = threading.Thread(target=self._authenticate_and_fetch_servers, daemon=True)
+        authentication_thread.start()
 
-        channels_to_sanitize = self._get_channel_to_sanitize()
-        for index, channel_id in enumerate(channels_to_sanitize):
+    def _sanitize_channels(self, channel_id, author_id):
+        with self._lock:
             for guild in self.guilds.channels:
                 if guild.id == channel_id:
                     guild.sanitize(author_id, False)
@@ -104,6 +110,15 @@ class MainFrame(wx.Frame):
             for direct_message_channel in self.direct_message_channels.channels:
                 if direct_message_channel.id == id:
                     direct_message_channel.sanitize(author_id, False)
+
+    def _on_sanitize_button_clicked(self, event):
+        self.progress_gauge.SetValue(0)
+        author_id = self.client.current_user_info.id
+
+        channels_to_sanitize = self._get_channel_to_sanitize()
+        for index, channel_id in enumerate(channels_to_sanitize):
+            sanitization_thread = threading.Thread(target=self._sanitize_channels, args=[channel_id, author_id], daemon=True)
+            sanitization_thread.start()
     
             self.progress_gauge.SetValue((index / len(channels_to_sanitize) * 100))
 
