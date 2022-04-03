@@ -45,7 +45,7 @@ class CommandLineInterface:
             action=argparse.BooleanOptionalAction)
 
         parsed_arguments = parser.parse_args(args)
-        if parsed_arguments.file:
+        if parsed_arguments.useconfig:
             config = self.configuration_manager.get_service_config('discord')
         else:
             config = DiscordConfiguration(

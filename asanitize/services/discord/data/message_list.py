@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from asanitize.sqlite import MessageDB
 from asanitize.data_structure.linked_list import LinkedList
 from asanitize.services.discord.data.message import Message
 
@@ -34,9 +33,7 @@ class MessageList:
             ))
 
     def sanitize_all(self, is_fast_mode: bool) -> None:
-        message_db = MessageDB('discord_deleted_messages.sqlite3')
         for i in range(self.messages.count):
             print('    Sanitizing ({}/{})'.format(i + 1, self.messages.count))
             message = self.messages.find(i)
-            message_db.insert_row(message.item.id, message.item.content, message.item.channel_id)
             message.item.sanitize(is_fast_mode)
