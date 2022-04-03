@@ -1,4 +1,3 @@
-from ast import parse
 import sys
 import argparse
 from asanitize.configuration_manager import DiscordConfiguration, RedditConfiguration, ConfigurationManager
