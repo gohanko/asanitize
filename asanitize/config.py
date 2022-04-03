@@ -1,3 +1,4 @@
+import sys
 import os
 import json
 from dataclasses import dataclass, field
@@ -22,39 +23,30 @@ class ConfigurationManager(object):
     discord_config: DiscordConfiguration = DiscordConfiguration()
     reddit_config: RedditConfiguration = RedditConfiguration()
 
-    def __init__(self):
-        config = self._load_config(DEFAULT_CONFIGURATION_DIRECTORY)
-        self.discord_config = DiscordConfiguration(
-            config.get('discord').get('token'),
-            config.get('discord').get('channels_to_sanitize'),
-            config.get('discord').get('fastmode'))
-
-        self.reddit_config = RedditConfiguration(
-            config.get('reddit').get('client_id'),
-            config.get('reddit').get('client_secret'),
-            config.get('reddit').get('username'),
-            config.get('reddit').get('password'))
-
-    def _load_config(self, filename):
-        if not os.path.exists(filename):
-            new_file = open(filename, 'w')
-            json.dump(
-                {'discord': self.discord_config.__dict__, 'reddit': self.reddit_config.__dict__},
-                new_file,
-                indent=4)
-                
-            new_file.close()
-
-        with open(filename, 'r') as file:
-            data = json.load(file)
-        
-        return data
+    def load_config(self, filename):
+        try:
+            with open(filename, 'r') as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            print("Cannot load config file")
+            sys.exit(0)
+        else:
+            return data
 
     def _save_config(self):
         config = {
             'discord': self.discord_config.__dict__,
             'reddit': self.reddit_config.__dict__
         }
+
+        if not os.path.exists(DEFAULT_CONFIGURATION_DIRECTORY):
+            new_file = open(DEFAULT_CONFIGURATION_DIRECTORY, 'w')
+            json.dump(
+                {'discord': self.discord_config.__dict__, 'reddit': self.reddit_config.__dict__},
+                new_file,
+                indent=4)
+                
+            new_file.close()
 
         with open(DEFAULT_CONFIGURATION_DIRECTORY, 'w') as file:
             json.dump(config, file, indent=4)

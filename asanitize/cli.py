@@ -38,7 +38,7 @@ class CommandLineInterface:
             help='Required. Either a specific channel id or \'all\' to sanitize all.')
         parser.add_argument(
             '--useconfig',
-            help='Optional. File containing authentication token and channel ids.')
+            help='Optional. File path containing authentication token and channel ids.')
         parser.add_argument(
             '--fastmode',
             help='Optional. Just deletes message instead of editing before deleting if set.',
@@ -46,6 +46,7 @@ class CommandLineInterface:
 
         parsed_arguments = parser.parse_args(args)
         if parsed_arguments.useconfig:
+            self.configuration_manager.load_config(parsed_arguments.useconfig)
             config = self.configuration_manager.get_service_config('discord')
         else:
             config = DiscordConfiguration(
@@ -84,6 +85,7 @@ class CommandLineInterface:
 
         parsed_arguments = parser.parse_args(args)
         if parsed_arguments.file:
+            self.configuration_manager.load_config(parsed_arguments.useconfig)
             config = self.configuration_manager.get_service_config('reddit')
         else:
             config = RedditConfiguration(

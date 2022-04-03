@@ -24,17 +24,20 @@ For users who wants to automate the task, `asanitize` also allows for the use of
 You can tell `asanitize` which file to look at by using the `--file` flag after selecting which service you want to use. For example, `python -m sanitize <service> --file <location>`.
 
 Config example:
-```yaml
-discord:
-    token: 'invalid_token'
-    channel: 'invalid_channel'
-reddit:
-    client_id: 'invalid_client_id'
-    client_secret: 'invalid_client_secret'
-    username: 'invalid_username'
-    password: 'invalid_password'
-    two_factor: 'invalid_two_factor'
-    fastmode: True|False
+```json
+{
+    "discord": {
+        "token": "",
+        "channels_to_sanitize": [],
+        "fastmode": false
+    },
+    "reddit": {
+        "client_id": "",
+        "client_secret": "",
+        "username": "",
+        "password": ""
+    }
+}
 ```
 
 ## LICENSE
