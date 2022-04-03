@@ -3,7 +3,6 @@ from asanitize.services.discord.client import Client
 
 
 def sanitize(token, channels_to_sanitize, author_id=None, is_fast_mode=False):
-    print('\n')
     start_time = time.perf_counter()
 
     client = Client(token)

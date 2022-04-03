@@ -1,7 +1,7 @@
 from ast import parse
 import sys
 import argparse
-from asanitize.config import DiscordConfiguration, RedditConfiguration, ConfigurationManager
+from asanitize.configuration_manager import DiscordConfiguration, RedditConfiguration, ConfigurationManager
 from asanitize.services.discord.sanitize import sanitize
 from asanitize.services.reddit.reddit import RedditRoutine
 
@@ -80,11 +80,11 @@ class CommandLineInterface:
             '--two_factor',
             help='Set if you have two factor authentication on your account.')
         parser.add_argument(
-            '--file',
+            '--useconfig',
             help='Optional. File containing authentication secrets.')
 
         parsed_arguments = parser.parse_args(args)
-        if parsed_arguments.file:
+        if parsed_arguments.useconfig:
             self.configuration_manager.load_config(parsed_arguments.useconfig)
             config = self.configuration_manager.get_service_config('reddit')
         else:
