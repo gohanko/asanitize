@@ -1,4 +1,6 @@
 # asanitize
+![Status](https://github.com/gohanko/asanitize/actions/workflows/asanitize/badge.svg)
+
 A simple commandline (and now GUI) tool to bulk delete messages/posts from your social media accounts. Please beware that using this tool on some services such as Discord is against their TOS and you might get banned.
 
 ## Installation
