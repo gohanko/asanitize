@@ -1,5 +1,5 @@
 import sys
-from asanitize.cli import CommandLineInterface
+from asanitize.command_line_interface import CommandLineInterface
 
 
 if __name__ == '__main__':
