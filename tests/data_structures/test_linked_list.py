@@ -6,10 +6,10 @@ class TestLinkedList(unittest.TestCase):
     def setUp(self) -> None:
         self.linked_list = LinkedList()
 
-    def test_isempty_if_empty(self) -> None:
+    def testIsEmptyIfEmpty(self) -> None:
         self.assertTrue(self.linked_list.is_empty())
 
-    def test_insert(self) -> None:
+    def testInsert(self) -> None:
         self.linked_list.append('test_item')
         self.linked_list.append('test_item2')
         self.linked_list.append('test_item3')
@@ -20,21 +20,21 @@ class TestLinkedList(unittest.TestCase):
         self.assertEqual(self.linked_list.find(2).item, 'test_item2')
         self.assertEqual(self.linked_list.find(3).item, 'test_item3')
 
-    def test_append(self) -> None:
+    def testAppend(self) -> None:
         self.linked_list.append('test_item')
         self.assertEqual(self.linked_list.head.item, 'test_item')
 
-    def test_isempty_if_not_empty(self) -> None:
+    def testIsEmptyIfNotEmpty(self) -> None:
         self.linked_list.append('test_item')
         self.assertFalse(self.linked_list.is_empty())
 
-    def test_find(self) -> None:
+    def testFind(self) -> None:
         self.linked_list.append('test_item')
         node = self.linked_list.find(0)
 
         self.assertEqual(node.item, 'test_item')
 
-    def test_set(self) -> None:
+    def testSet(self) -> None:
         self.linked_list.append('test_item')
         node = self.linked_list.find(0) 
         
@@ -42,7 +42,7 @@ class TestLinkedList(unittest.TestCase):
         self.assertTrue(self.linked_list.set(0, 'test_item_2'))
         self.assertEqual(node.item, 'test_item_2')
 
-    def test_remove(self):
+    def testRemove(self):
         self.linked_list.append('test_item')
         self.linked_list.append('test_item2')
         self.linked_list.append('test_item3')

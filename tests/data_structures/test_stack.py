@@ -6,7 +6,7 @@ class TestStack(unittest.TestCase):
     def setUp(self) -> None:
         self.stack = Stack()
 
-    def test_push(self):
+    def testPush(self):
         self.stack.push('A')
         self.assertEqual(self.stack.top.item, 'A')
 
@@ -19,7 +19,7 @@ class TestStack(unittest.TestCase):
         self.stack.push('D')
         self.assertEqual(self.stack.top.item, 'D')
 
-    def test_pop(self):
+    def testPop(self):
         self.stack.push('A')
         self.stack.push('B')
         self.stack.push('C')

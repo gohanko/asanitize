@@ -31,6 +31,17 @@ class ConfigurationManager(object):
             print("Cannot load config file")
             sys.exit(0)
         else:
+            self.discord_config = DiscordConfiguration(
+                data.get('discord').get('token'),
+                data.get('discord').get('channels_to_sanitize'),
+                data.get('discord').get('fastmode'))
+
+            self.reddit_config = RedditConfiguration(
+                data.get('reddit').get('client_id'),
+                data.get('reddit').get('client_secret'),
+                data.get('reddit').get('username'),
+                data.get('reddit').get('password'))
+
             return data
 
     def _save_config(self):
@@ -54,7 +65,7 @@ class ConfigurationManager(object):
     def get_service_config(self, service):
         if service == 'discord':
             return self.discord_config
-        
+
         if service == 'reddit':
             return self.reddit_config
 

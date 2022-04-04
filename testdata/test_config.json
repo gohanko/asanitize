@@ -1,0 +1,17 @@
+{
+    "discord": {
+        "token": "test_token",
+        "channels_to_sanitize": [
+            "0000",
+            "1111",
+            "2222"
+        ],
+        "fastmode": false
+    },
+    "reddit": {
+        "client_id": "test_client_id",
+        "client_secret": "test_client_secret",
+        "username": "test_username",
+        "password": "test_password"
+    }
+}
