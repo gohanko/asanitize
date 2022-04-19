@@ -1,14 +1,14 @@
-import time
 from dataclasses import dataclass, field
 
 from asanitize.services.discord import session, build_url
+from asanitize.services.discord.data.http_middleware import HTTPMiddleware
 from asanitize.services.discord.data.message_list import MessageList
 from asanitize.services.discord.data.message import Emoji, Sticker, Role, RoleTag
 from asanitize.services.discord.data.user import User
 
 
 @dataclass
-class BaseChannel:
+class BaseChannel(HTTPMiddleware):
     id: str = ''
 
     def _get_search_url(self, author_id: str, offset: str) -> MessageList:
@@ -16,14 +16,9 @@ class BaseChannel:
 
     def search(self, author_id: str, offset: str, previous_retrieved_messages: list = []) -> MessageList:
         search_url = self._get_search_url(author_id, offset)
-        response = session.get(search_url)
-        total_results = response.json().get('total_results')
+        response = self.get(search_url)
 
-        if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after'))
-            time.sleep(sleep_interval)
-            return self.search(author_id, offset, previous_retrieved_messages)
-        
+        total_results = response.json().get('total_results')
         retrieved_messages = previous_retrieved_messages
         if response.json().get('messages') != None:
             retrieved_messages = retrieved_messages + response.json().get('messages')

@@ -1,9 +1,9 @@
-import time
 from dataclasses import dataclass, field
 
 from asanitize.common import random_word
-from asanitize.services.discord import build_url, session
+from asanitize.services.discord import build_url
 from asanitize.services.discord.data.user import User
+from asanitize.services.discord.data.http_middleware import HTTPMiddleware
 
 @dataclass
 class RoleTag:
@@ -51,7 +51,7 @@ class Sticker:
 
 
 @dataclass
-class Message:
+class Message(HTTPMiddleware):
     id: str = ''
     type: int = 0
     content: str = ''
@@ -72,32 +72,18 @@ class Message:
 
     def edit(self, new_content: str) -> None:
         edit_message_url = build_url('channels', self.channel_id, 'messages', self.id)
-        response = session.patch(
-            edit_message_url, 
-            headers={'Content-Type': 'application/json'}, 
-            json={'content': new_content}
-        )
+        response = self.patch(edit_message_url, new_content)
 
         if response.status_code == 200:
             self.content = new_content
 
-        if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after'))
-            time.sleep(sleep_interval)
-            self.edit(new_content)
-
     # Can only delete it from discord servers but not itself from out list.
-    def delete(self):
+    def delete_message(self):
         delete_message_url = build_url('channels', self.channel_id, 'messages', self.id)
-        response = session.delete(delete_message_url)
-
-        if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after'))
-            time.sleep(sleep_interval)
-            self.delete()
+        response = self.delete(delete_message_url)
 
     def sanitize(self, is_fast_mode: bool) -> None:
         if not is_fast_mode:
             self.edit(random_word())
 
-        self.delete()
+        self.delete_message()
