@@ -81,7 +81,7 @@ class Guild(BaseChannel):
 
     def info(self):
         guild_info_url = build_url('channels', self.id)
-        response = session.get(guild_info_url).json()
+        response = self.get(guild_info_url).json()
 
         emojis = []
         for emoji in response.get('emojis'):

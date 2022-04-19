@@ -1,9 +1,10 @@
 from asanitize.services.discord import session, build_url
+from asanitize.services.discord.data.http_middleware import HTTPMiddleware
 from asanitize.services.discord.data.channel_list import DirectMessageChannelList, GuildList, User
 from asanitize.services.discord.exceptions import AuthenticationTokenMissingError, ConnectionError
 
 
-class Client(object):
+class Client(HTTPMiddleware):
     token = None
     current_user_info = None
 
@@ -18,12 +19,12 @@ class Client(object):
             raise ConnectionError('Connection error')
 
     def is_connection_ok(self) -> bool:
-        status = session.get(build_url('users', '@me'))
+        status = self.get(build_url('users', '@me'))
         return status.status_code == 200
 
     def get_my_info(self) -> User:
         current_user_url = build_url('users', '@me')
-        response = session.get(current_user_url).json()
+        response = self.get(current_user_url).json()
         current_user = User(
             id=response.get('id'),
             username=response.get('username'),
@@ -48,10 +49,10 @@ class Client(object):
 
     def get_direct_message_channels(self) -> DirectMessageChannelList:
         direct_messages_url = build_url('users', '@me', 'channels')
-        response = session.get(direct_messages_url).json()
+        response = self.get(direct_messages_url).json()
         return DirectMessageChannelList(response)
 
     def get_guilds(self) -> GuildList:
         guilds_url = build_url('users', '@me', 'guilds')
-        response = session.get(guilds_url).json()
+        response = self.get(guilds_url).json()
         return GuildList(guild_list=response)
