@@ -17,6 +17,7 @@ class BaseChannel:
     def search(self, author_id: str, offset: str, previous_retrieved_messages: list = []) -> MessageList:
         search_url = self._get_search_url(author_id, offset)
         response = session.get(search_url)
+        total_results = response.json().get('total_results')
 
         if response.status_code == 429:
             sleep_interval = int(response.headers.get('retry-after'))
@@ -26,8 +27,9 @@ class BaseChannel:
         retrieved_messages = previous_retrieved_messages
         if response.json().get('messages') != None:
             retrieved_messages = retrieved_messages + response.json().get('messages')
+            print('    Retrieving ({}/{}) messages'.format(len(retrieved_messages), total_results))
 
-        if response.json().get('total_results') == len(retrieved_messages):
+        if total_results == len(retrieved_messages):
             return MessageList(retrieved_messages)
 
         return self.search(author_id, offset + 25, retrieved_messages)
