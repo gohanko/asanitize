@@ -19,8 +19,9 @@ class BaseChannel:
         response = session.get(search_url)
 
         if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after')) / 1000
+            sleep_interval = int(response.headers.get('retry-after'))
             time.sleep(sleep_interval)
+            return self.search(author_id, offset, previous_retrieved_messages)
         
         retrieved_messages = previous_retrieved_messages
         if response.json().get('messages') != None:

@@ -82,7 +82,7 @@ class Message:
             self.content = new_content
 
         if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after')) / 1000
+            sleep_interval = int(response.headers.get('retry-after'))
             time.sleep(sleep_interval)
             self.edit(new_content)
 
@@ -92,7 +92,7 @@ class Message:
         response = session.delete(delete_message_url)
 
         if response.status_code == 429:
-            sleep_interval = int(response.headers.get('retry-after')) / 1000
+            sleep_interval = int(response.headers.get('retry-after'))
             time.sleep(sleep_interval)
             self.delete()
 
