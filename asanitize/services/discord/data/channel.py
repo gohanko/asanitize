@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from email import message
 import math
 
 from asanitize.services.discord import build_url
