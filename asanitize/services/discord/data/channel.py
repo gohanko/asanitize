@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
+from email import message
+import math
 
-from asanitize.services.discord import session, build_url
+from asanitize.services.discord import build_url
 from asanitize.services.discord.data.http_middleware import HTTPMiddleware
 from asanitize.services.discord.data.message_list import MessageList
 from asanitize.services.discord.data.message import Emoji, Sticker, Role, RoleTag
@@ -14,27 +16,19 @@ class BaseChannel(HTTPMiddleware):
     def _get_search_url(self, author_id: str, offset: str) -> MessageList:
         pass
 
-    def search(self, author_id: str, offset: str, previous_retrieved_messages: list = []) -> MessageList:
+    def search(self, author_id: str, offset: str) -> MessageList:
         search_url = self._get_search_url(author_id, offset)
         response = self.get(search_url)
-
-        total_results = response.json().get('total_results')
-        retrieved_messages = previous_retrieved_messages
-        if response.json().get('messages') != None:
-            retrieved_messages = retrieved_messages + response.json().get('messages')
-            print('    Retrieving ({}/{}) messages'.format(len(retrieved_messages), total_results))
-
-        if total_results == len(retrieved_messages):
-            return MessageList(retrieved_messages)
-
-        return self.search(author_id, offset + 25, retrieved_messages)
+        return response.json().get('messages')
 
     def sanitize(self, author_id: str, is_fast_mode: bool) -> None:
-        message_list = self.search(author_id, 0)
-        if message_list.messages.count < 1:
-            print('    No messages found! Skipping...')
+        total_results = self.get(self._get_search_url(author_id, 0)).json().get('total_results')
 
-        message_list.sanitize_all(is_fast_mode)
+        message_list = MessageList([], total_results)
+        for i in range(0, math.ceil(total_results / 25)):
+            message_list.append(self.search(author_id, i * 25))
+            message_list.sanitize_all(is_fast_mode)
+
 
 
 @dataclass
