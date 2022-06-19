@@ -80,7 +80,7 @@ class Message(HTTPMiddleware):
     # Can only delete it from discord servers but not itself from out list.
     def delete_message(self):
         delete_message_url = build_url('channels', self.channel_id, 'messages', self.id)
-        response = self.delete(delete_message_url)
+        self.delete(delete_message_url)
 
     def sanitize(self, is_fast_mode: bool) -> None:
         if not is_fast_mode:

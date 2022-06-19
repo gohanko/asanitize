@@ -46,3 +46,5 @@ class MessageList:
             message = self.messages.find(i)
             message.item.sanitize(is_fast_mode)
             self.sanitize_curr = self.sanitize_curr + 1
+        
+        self.messages = LinkedList()

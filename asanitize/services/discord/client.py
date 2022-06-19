@@ -15,17 +15,12 @@ class Client(HTTPMiddleware):
         
         session.headers.update({'Authorization': token })
 
-        if not self.is_connection_ok():
+        response = self.get(build_url('users', '@me'))
+        if response.status_code != 200:
             raise ConnectionError('Connection error')
 
-    def is_connection_ok(self) -> bool:
-        status = self.get(build_url('users', '@me'))
-        return status.status_code == 200
-
-    def get_my_info(self) -> User:
-        current_user_url = build_url('users', '@me')
-        response = self.get(current_user_url).json()
-        current_user = User(
+        response = response.json()
+        self.current_user_info = User(
             id=response.get('id'),
             username=response.get('username'),
             avatar=response.get('avatar'),
@@ -43,9 +38,6 @@ class Client(HTTPMiddleware):
             verified=response.get('verified'),
             phone=response.get('phone'),
         )
-
-        self.current_user_info = current_user
-        return current_user
 
     def get_direct_message_channels(self) -> DirectMessageChannelList:
         direct_messages_url = build_url('users', '@me', 'channels')

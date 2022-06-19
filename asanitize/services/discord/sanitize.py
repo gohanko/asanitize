@@ -2,11 +2,11 @@ import time
 from asanitize.services.discord.client import Client
 
 
-def sanitize(token, channels_to_sanitize, author_id=None, is_fast_mode=False):
+def sanitize(token: str, channels_to_sanitize: list, author_id:str = None, is_fast_mode: bool = False):
     start_time = time.perf_counter()
 
     client = Client(token)
-    current_user_info = client.get_my_info()
+    current_user_info = client.current_user_info
     guild_list = client.get_guilds()
     direct_message_channel_list = client.get_direct_message_channels()
 
