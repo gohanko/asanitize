@@ -7,7 +7,7 @@ idna==2.10
 iniconfig==1.1.1
 numpy==1.22.3
 packaging==20.8
-Pillow==9.0.1
+Pillow==9.3.0
 pluggy==0.13.1
 praw==7.1.0
 prawcore==1.5.0
