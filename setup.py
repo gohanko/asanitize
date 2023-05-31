@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(include=['asanitize', 'asanitize.*']),
     install_requires=[
         'praw==7.1.0',
-        'requests==2.25.1'
+        'requests==2.31.0'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
