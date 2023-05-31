@@ -18,7 +18,7 @@ After installing the software, you can visit the help page via `python -m asanit
 ### Configuration Files
 For users who wants to automate the task, `asanitize` also allows for the use of configuration files. This will allow users to set authentication tokens as well as different behaviours without typing it out everytime.
 
-You can tell `asanitize` which file to look at by using the `--useconfig` flag after selecting which service you want to use. For example, `python -m sanitize <service> --useconfig <location>`.
+You can tell `asanitize` which file to look at by using the `--useconfig` flag after selecting which service you want to use. For example, `python -m asanitize <service> --useconfig <location>`.
 
 Config example:
 ```json
