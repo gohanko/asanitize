@@ -26,8 +26,4 @@ def sanitize(token: str, channels_to_sanitize: list, author_id:str = None, is_fa
 
     end_time = time.perf_counter()
 
-    print('\n********************************')
-    print(f'Start time     : {start_time}')
-    print(f'End time       : {end_time}')
-    print(f'Execution time : {end_time - start_time:0.6f}s')
-    print('********************************\n')
+    print(f'\nStart Time: {start_time} | End Time: {end_time} | Execution Time: {end_time - start_time:0.6f}s')
