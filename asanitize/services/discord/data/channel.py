@@ -17,15 +17,24 @@ class BaseChannel(HTTPMiddleware):
 
     def search(self, author_id: str, offset: str) -> MessageList:
         search_url = self._get_search_url(author_id, offset)
-        response = self.get(search_url)
-        return response.json().get('messages')
+        response = self.get(search_url).json()
+        messages = response.get('messages')
+        return messages
 
     def sanitize(self, author_id: str, is_fast_mode: bool) -> None:
         total_results = self.get(self._get_search_url(author_id, 0)).json().get('total_results')
 
         message_list = MessageList(total_results)
-        for i in range(0, math.ceil(total_results / 25)):
-            message_list.append(self.search(author_id, i * 25))
+        total_pages = math.ceil(total_results / 25)
+        for i in range(0, total_pages):
+            messages_data = self.search(author_id, i * 25)
+
+            if total_results != 0 and len(messages_data) == 0:
+                print('- List of messages is not sent by discord, even though there are {} messages!'.format(total_results))
+                break
+            
+            message_list.init_progress_bar()
+            message_list.append(messages_data)
             message_list.sanitize_all(is_fast_mode)
 
 

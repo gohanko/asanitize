@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from tqdm import tqdm
+from time import sleep
 
 from asanitize.data_structure.linked_list import LinkedList
 from asanitize.services.discord.data.message import Message
@@ -13,9 +15,10 @@ class MessageList:
 
     def __init__(self, total_results: int = 0) -> None:
         self.messages = LinkedList()
-
-        self.sanitize_curr = 0
         self.total_results = total_results
+
+    def init_progress_bar(self):
+        self.progress_bar = tqdm(total=self.total_results)
 
     def append(self, message_list: list):
         for message in message_list:
@@ -41,9 +44,11 @@ class MessageList:
 
     def sanitize_all(self, is_fast_mode: bool) -> None:
         for i in range(0, self.messages.count):
-            print('    Sanitizing ({}/{})'.format(self.sanitize_curr + 1, self.total_results))
             message = self.messages.find(i)
             message.item.sanitize(is_fast_mode)
-            self.sanitize_curr = self.sanitize_curr + 1
+            self.progress_bar.update(1)
         
         self.messages = LinkedList()
+
+    def __exit__(self):
+        self.progress_bar.close()
