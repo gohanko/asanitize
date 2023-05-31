@@ -11,9 +11,8 @@ class MessageList:
     sanitize_curr: int
     total_results: int
 
-    def __init__(self, message_list: list, total_results: int = 0) -> None:
+    def __init__(self, total_results: int = 0) -> None:
         self.messages = LinkedList()
-        self.append(message_list)
 
         self.sanitize_curr = 0
         self.total_results = total_results
@@ -41,8 +40,8 @@ class MessageList:
             ))
 
     def sanitize_all(self, is_fast_mode: bool) -> None:
-        for i in range(self.sanitize_curr, self.messages.count):
-            print('    Sanitizing ({}/{})'.format(i + 1, self.total_results))
+        for i in range(0, self.messages.count):
+            print('    Sanitizing ({}/{})'.format(self.sanitize_curr + 1, self.total_results))
             message = self.messages.find(i)
             message.item.sanitize(is_fast_mode)
             self.sanitize_curr = self.sanitize_curr + 1
