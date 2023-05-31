@@ -24,7 +24,6 @@ class BaseChannel(HTTPMiddleware):
         total_results = self.get(self._get_search_url(author_id, 0)).json().get('total_results')
 
         message_list = MessageList(total_results)
-        aa = math.ceil(total_results / 25)
         for i in range(0, math.ceil(total_results / 25)):
             message_list.append(self.search(author_id, i * 25))
             message_list.sanitize_all(is_fast_mode)
