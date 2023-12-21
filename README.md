@@ -1,7 +1,7 @@
 # asanitize
 ![Status](https://github.com/gohanko/asanitize/actions/workflows/tests.yml/badge.svg)
 
-A simple commandline tool to bulk delete messages/posts from your social media accounts. Please beware that this tool might be against TOS of some services, and you might get banned.
+A simple commandline tool to bulk delete messages/posts from your social media accounts. Please beware that this tool might be against TOS of some services. Use at your own risk.
 
 ## Installation
 Python 3.6+ is required. For instructions on installing Python and pip see "The Hitchhiker's Guide to Python" [Installation Guides](https://docs.python-guide.org/starting/installation/)
