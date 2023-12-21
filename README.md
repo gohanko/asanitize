@@ -22,9 +22,7 @@ Users can visit the main and service specific help page via:
 > NOTE: Currently supported services are `reddit` and `discord`.
 
 ### To automate tasks (for cronjobs etc.)
-To automate tasks, `asanitize` supports configuration files.
-
-Take the following step to set, and run the application with configuration files:
+To automate tasks, `asanitize` supports configuration files. Take the following step to set, and run the application with configuration files:
 1. The content of the configuration file should be in `json` format. For example:
 ```json
 {
