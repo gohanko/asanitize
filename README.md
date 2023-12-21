@@ -1,26 +1,31 @@
 # asanitize
 ![Status](https://github.com/gohanko/asanitize/actions/workflows/tests.yml/badge.svg)
 
-A simple commandline tool to bulk delete messages/posts from your social media accounts. Please beware that using this tool on some services such as Discord is against their TOS and you might get banned.
+A simple commandline tool to bulk delete messages/posts from your social media accounts. Please beware that this tool might be against TOS of some services, and you might get banned.
 
 ## Installation
 Python 3.6+ is required. For instructions on installing Python and pip see "The Hitchhiker's Guide to Python" [Installation Guides](https://docs.python-guide.org/starting/installation/)
 
-Once you have Python installed, you can run the following to install `asanitize`.
+Once installed, run the following to install `asanitize`.
 
 ```bash
 pip install git+https://github.com/gohanko/asanitize
 ```
 
 ## Usage
-After installing the software, you can visit the help page via `python -m asanitize -h` for help on how to use it. Every service has its own help page as well, you can check them by running `python -m asanitize <service> -h`. Currently supported services are `reddit` and `discord`.
 
-### Configuration Files
-For users who wants to automate the task, `asanitize` also allows for the use of configuration files. This will allow users to set authentication tokens as well as different behaviours without typing it out everytime.
+### Visiting the help page
+Users can visit the main and service specific help page via:
+- `python -m asanitize -h`, for main page.
+- `python -m asanitize <service> -h`, for service specific help page.
 
-You can tell `asanitize` which file to look at by using the `--useconfig` flag after selecting which service you want to use. For example, `python -m asanitize <service> --useconfig <location>`.
+> NOTE: Currently supported services are `reddit` and `discord`.
 
-Config example:
+### To automate tasks (for cronjobs etc.)
+To automate tasks, `asanitize` supports configuration files.
+
+The requirements:
+- The content of the configuration file should be in `json` format. For example:
 ```json
 {
     "discord": {
@@ -36,6 +41,7 @@ Config example:
     }
 }
 ```
+- Set the configuration file location using the `--useconfig` flag. For example, `python -m asanitize <service> --useconfig <location>`.
 
 ## LICENSE
 This project is license under GNU General Public License v3.0. For more information, see `LICENSE`.
