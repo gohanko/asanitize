@@ -25,7 +25,7 @@ Users can visit the main and service specific help page via:
 To automate tasks, `asanitize` supports configuration files.
 
 The requirements:
-- The content of the configuration file should be in `json` format. For example:
+1. The content of the configuration file should be in `json` format. For example:
 ```json
 {
     "discord": {
@@ -41,7 +41,7 @@ The requirements:
     }
 }
 ```
-- Set the configuration file location using the `--useconfig` flag. For example, `python -m asanitize <service> --useconfig <location>`.
+2. Set the configuration file location using the `--useconfig` flag. For example, `python -m asanitize <service> --useconfig <location>`.
 
 ## LICENSE
 This project is license under GNU General Public License v3.0. For more information, see `LICENSE`.
