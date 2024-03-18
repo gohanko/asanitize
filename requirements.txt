@@ -2,10 +2,11 @@ atomicwrites==1.4.0
 attrs==20.3.0
 certifi==2023.7.22
 chardet==4.0.0
+charset-normalizer==3.3.2
 colorama==0.4.4
 idna==2.10
 iniconfig==1.1.1
-numpy==1.22.3
+numpy==1.26.4
 packaging==20.8
 Pillow==9.3.0
 pluggy==0.13.1
@@ -14,7 +15,7 @@ prawcore==1.5.0
 py==1.10.0
 pyparsing==2.4.7
 pytest==6.2.1
-PyYAML==5.4
+PyYAML==6.0.1
 requests==2.31.0
 six==1.15.0
 toml==0.10.2

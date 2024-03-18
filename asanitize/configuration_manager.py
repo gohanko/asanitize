@@ -28,8 +28,7 @@ class ConfigurationManager(object):
             with open(filename, 'r') as file:
                 data = json.load(file)
         except FileNotFoundError:
-            print("Cannot load config file")
-            sys.exit(0)
+            raise Exception("Cannot load config file")
         else:
             self.discord_config = DiscordConfiguration(
                 data.get('discord').get('token'),

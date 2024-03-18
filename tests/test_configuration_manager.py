@@ -38,16 +38,16 @@ class TestConfigurationManager(unittest.TestCase):
 
     def testLoadConfigNotExist(self):
         hasExitHappened = False
+        
         try:
-            self.configuration_manager.load_config('./testdata/doesnotexist.json')
-        except SystemExit as error:
-            if error.code == 0:
-                hasExitHappened = True
+            self.configuration_manager.load_config('./configs/notexist.config.json')
+        except Exception:
+            hasExitHappened = True
         
         self.assertTrue(hasExitHappened)
 
     def testLoadConfigExist(self):
-        data = self.configuration_manager.load_config('./testdata/test_config.json')
+        data = self.configuration_manager.load_config('./configs/test.config.json')
         self.assertTrue(data)
 
         self.assertTrue(self.configuration_manager.discord_config.token, 'test_token')
